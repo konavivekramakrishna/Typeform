@@ -1,63 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import "./index.css";
 import "./App.css";
 import Header from "./Header";
 import AppContainer from "./AppContainer";
-
-const formFields = [
-  {
-    id: 1,
-    label: "First Name",
-    type: "text",
-  },
-  {
-    id: 2,
-    label: "Last Name",
-    type: "text",
-  },
-  {
-    id: 3,
-    label: "Email",
-    type: "email",
-  },
-  {
-    id: 4,
-    label: "Date of Birth",
-    type: "date",
-  },
-  {
-    id: 5,
-    label: "Phone Number",
-    type: "tel",
-  },
-];
+import Home from "./components/Home";
+import Form from "./components/Form";
 
 function App() {
-  return (
-    <AppContainer>
-      <div className="p-4 mx-auto bg-white shadow-lg rounded-xl w-full lg:w-1/3 xl:w-1/3">
-        <Header title="Welcome to lesson 5 of #react-typescript with #tailwind" />
-        {formFields.map((field) => (
-          <div key={field.id} className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor=""
-            >
-              {field.label}
-            </label>
-            <input
-              className="block w-full border border-gray-300 rounded-lg py-2 px-3 leading-tight focus:outline-none focus:border-blue-500"
-              type={field.type}
-            />
-          </div>
-        ))}
+  const [state, setState] = useState("HOME");
 
-        <button
-          className="block  bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
-          type="submit"
-        >
-          Submit
-        </button>
+  const closeForm = () => {
+    setState("HOME");
+  };
+
+  const openForm = () => {
+    setState("FORM");
+  };
+
+  return (
+    <AppContainer  >
+      <div   className="p-4 mx-auto bg-white shadow-lg rounded-xl w-full lg:w-1/3 xl:w-1/3">
+        <Header title="Hello there" />
+        {state === "HOME" ? (
+          <Home openFormCB={openForm} />
+        ) : (
+          <Form closeFormCB={closeForm} />
+        )}
       </div>
     </AppContainer>
   );
