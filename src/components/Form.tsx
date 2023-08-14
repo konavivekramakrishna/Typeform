@@ -55,7 +55,7 @@ export default function Form(props: { closeFormCB: () => void }) {
       state.map((field) => ({
         ...field,
         value: "",
-      }))
+      })),
     );
     setNewField("");
   };
@@ -70,7 +70,7 @@ export default function Form(props: { closeFormCB: () => void }) {
           };
         }
         return field;
-      })
+      }),
     );
   };
 
