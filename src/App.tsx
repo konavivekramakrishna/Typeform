@@ -20,7 +20,7 @@ function App() {
   return (
     <AppContainer>
       <div className="p-4 mx-auto bg-white shadow-lg rounded-xl w-full lg:w-1/3 xl:w-1/3">
-        <Header title="Hello there" />
+        <Header title="Welcome to #Typeform" />
         {state === "HOME" ? (
           <Home openFormCB={openForm} />
         ) : (
