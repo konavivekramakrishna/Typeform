@@ -17,10 +17,14 @@ function App() {
     setState("FORM");
   };
 
-  return state === "HOME" ? (
-    <Home openFormCB={openForm} />
-  ) : (
-    <Form closeFormCB={closeForm} />
+  return (
+    <AppContainer>
+      {state === "HOME" ? (
+        <Home openFormCB={openForm} />
+      ) : (
+        <Form closeFormCB={closeForm} />
+      )}
+    </AppContainer>
   );
 }
 
