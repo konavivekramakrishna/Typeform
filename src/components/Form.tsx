@@ -68,7 +68,6 @@ const saveFormData = (currentForm: formData) => {
 export default function Form(props: { closeFormCB: () => void }) {
   const [state, setState] = useState(() => initialState());
   const [newField, setNewField] = useState("");
-
   const titleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -82,7 +81,10 @@ export default function Form(props: { closeFormCB: () => void }) {
   useEffect(() => {
     let timeout = setTimeout(() => {
       saveFormData(state);
-    }, 1000);
+    }, 1);
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [state]);
 
   const addField = () => {
@@ -143,6 +145,14 @@ export default function Form(props: { closeFormCB: () => void }) {
     }
   };
 
+  const changeFormTitle = (title: string) => {
+    const localForms = getLocalFormsData();
+    const newLocalForms = localForms.map((form) =>
+      form.id === state.id ? { ...form, title } : form,
+    );
+    saveLocalForms(newLocalForms);
+  };
+
   const addForm = () => {
     const localForms = getLocalFormsData();
     const newForm = {
@@ -170,6 +180,7 @@ export default function Form(props: { closeFormCB: () => void }) {
           placeholder="Enter Form Title"
           onChange={(e) => {
             setState({ ...state, title: e.target.value });
+            changeFormTitle(e.target.value); // Update the title in local storage
           }}
           ref={titleRef}
         />

@@ -39,7 +39,10 @@ export default function StoredForms(props: StoredFormsType) {
             onMouseEnter={() => setHoveredFormId(form.id)}
             onMouseLeave={() => setHoveredFormId(null)}
           >
-            <h2 className="text-lg font-semibold mb-1">{form.title}</h2>
+            <h2 className="text-lg font-semibold mb-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
+              {form.title}
+            </h2>
+
             <div className="flex justify-end space-x-1">
               <button
                 className="text-red-500 hover:text-red-600 focus:outline-none"
