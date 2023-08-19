@@ -60,7 +60,7 @@ const saveLocalForms = (localForms: formData[]) => {
 const saveFormData = (currentForm: formData) => {
   const localForms = getLocalFormsData();
   const updateLocalForms = localForms.map((form) =>
-    form.id === currentForm.id ? currentForm : form
+    form.id === currentForm.id ? currentForm : form,
   );
   saveLocalForms(updateLocalForms);
 };
@@ -122,7 +122,7 @@ export default function Form(props: { closeFormCB: () => void }) {
     setState({
       ...state,
       formFields: state.formFields.map((field) =>
-        field.id === id ? { ...field, value } : field
+        field.id === id ? { ...field, value } : field,
       ),
     });
   };
@@ -135,7 +135,7 @@ export default function Form(props: { closeFormCB: () => void }) {
         setState(newLocalForms[0]);
       } else {
         const currentFormIndex = newLocalForms.findIndex(
-          (form) => form.id === state.id
+          (form) => form.id === state.id,
         );
         setState(newLocalForms[currentFormIndex]);
       }
