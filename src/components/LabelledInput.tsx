@@ -1,13 +1,7 @@
 import React from "react";
+import { LabelledInputType } from "../types";
 
-export default function LabelledInput(props: {
-  label: string;
-  type: string;
-  id: number;
-  setFieldValCB: (id: number, value: string) => void;
-  removeFieldCB: (id: number) => void;
-  value: string;
-}) {
+export default function LabelledInput(props: LabelledInputType) {
   return (
     <div key={props.id} className="mb-4">
       <label className="block text-gray-700 text-sm font-bold mb-2">

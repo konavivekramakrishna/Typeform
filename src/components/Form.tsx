@@ -1,19 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import LabelledInput from "./LabelledInput";
-import { randomUUID } from "crypto";
+import StoredForms from "./StoredForms";
 
-interface formData {
-  id: number;
-  title: string;
-  formFields: formField[];
-}
-
-interface formField {
-  id: number;
-  label: string;
-  type: string;
-  value: string;
-}
+import { formField, formData } from "../types";
 
 const initialFormFields: formField[] = [
   { id: 1, label: "First Name", type: "text", value: "" },
@@ -93,7 +82,7 @@ export default function Form(props: { closeFormCB: () => void }) {
   useEffect(() => {
     let timeout = setTimeout(() => {
       saveFormData(state);
-    }, 0);
+    }, 1000);
   }, [state]);
 
   const addField = () => {
@@ -138,9 +127,42 @@ export default function Form(props: { closeFormCB: () => void }) {
     });
   };
 
+  const delForm = (id: number) => {
+    const localForms = getLocalFormsData();
+    if (localForms.length > 1) {
+      const newLocalForms = localForms.filter((form) => form.id !== id);
+      if (state.id === id) {
+        setState(newLocalForms[0]);
+      } else {
+        const currentFormIndex = newLocalForms.findIndex(
+          (form) => form.id === state.id
+        );
+        setState(newLocalForms[currentFormIndex]);
+      }
+      saveLocalForms(newLocalForms);
+    }
+  };
+
+  const addForm = () => {
+    const localForms = getLocalFormsData();
+    const newForm = {
+      id: Number(new Date()),
+      title: "Untitled Form",
+      formFields: initialFormFields,
+    };
+    saveLocalForms([...localForms, newForm]);
+    setState(newForm);
+  };
+
   return (
     <div className="p-4 border border-gray-300 rounded-lg shadow-md">
-      <div className="mb-4">
+      <StoredForms
+        forms={getLocalFormsData()}
+        delFormCB={delForm}
+        addFormCB={addForm}
+        setFormCB={(form: formData) => setState(form)}
+      ></StoredForms>
+      <div className="mt-4">
         <input
           type="text"
           value={state.title}
@@ -190,6 +212,7 @@ export default function Form(props: { closeFormCB: () => void }) {
         >
           Save
         </button>
+        <i className="fi fi-tr-square-plus"></i>
 
         <button
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg mr-2 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
