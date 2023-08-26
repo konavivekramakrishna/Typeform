@@ -17,15 +17,7 @@ function App() {
     setState("FORM");
   };
 
-  return (
-    <>
-      {state === "HOME" ? (
-        <Home openFormCB={openForm} />
-      ) : (
-        <Form closeFormCB={closeForm} />
-      )}
-    </>
-  );
+  return <>{state === "HOME" ? <Home /> : <Form formId={Number(0)} />}</>;
 }
 
 export default App;

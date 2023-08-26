@@ -6,9 +6,7 @@ interface formData {
 
 interface StoredFormsType {
   forms: formData[];
-  delFormCB: (id: number) => void;
-  addFormCB: () => void;
-  setFormCB: (form: formData) => void;
+   
 }
 
 interface formField {

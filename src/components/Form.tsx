@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import LabelledInput from "./LabelledInput";
-import StoredForms from "./StoredForms";
 
 import { formField, formData } from "../types";
 
@@ -37,10 +36,11 @@ const getLocalFormsData: () => formData[] = () => {
   return savedForms ? JSON.parse(savedForms) : [];
 };
 
-const initialState: () => formData = () => {
+const initialState: (id: number) => formData = (id) => {
   const localForms = getLocalFormsData();
-  if (localForms.length > 0) {
-    return localForms[0];
+  const form = localForms.find((form) => form.id === id);
+  if (form) {
+    return form;
   }
 
   const newForm = {
@@ -60,13 +60,13 @@ const saveLocalForms = (localForms: formData[]) => {
 const saveFormData = (currentForm: formData) => {
   const localForms = getLocalFormsData();
   const updateLocalForms = localForms.map((form) =>
-    form.id === currentForm.id ? currentForm : form,
+    form.id === currentForm.id ? currentForm : form
   );
   saveLocalForms(updateLocalForms);
 };
 
-export default function Form(props: { closeFormCB: () => void }) {
-  const [state, setState] = useState(() => initialState());
+export default function Form(props: { formId: number }) {
+  const [state, setState] = useState(() => initialState(props.formId));
   const [newField, setNewField] = useState("");
   const titleRef = useRef<HTMLInputElement>(null);
 
@@ -124,7 +124,7 @@ export default function Form(props: { closeFormCB: () => void }) {
     setState({
       ...state,
       formFields: state.formFields.map((field) =>
-        field.id === id ? { ...field, value } : field,
+        field.id === id ? { ...field, value } : field
       ),
     });
   };
@@ -137,7 +137,7 @@ export default function Form(props: { closeFormCB: () => void }) {
         setState(newLocalForms[0]);
       } else {
         const currentFormIndex = newLocalForms.findIndex(
-          (form) => form.id === state.id,
+          (form) => form.id === state.id
         );
         setState(newLocalForms[currentFormIndex]);
       }
@@ -148,7 +148,7 @@ export default function Form(props: { closeFormCB: () => void }) {
   const changeFormTitle = (title: string) => {
     const localForms = getLocalFormsData();
     const newLocalForms = localForms.map((form) =>
-      form.id === state.id ? { ...form, title } : form,
+      form.id === state.id ? { ...form, title } : form
     );
     saveLocalForms(newLocalForms);
   };
@@ -166,12 +166,6 @@ export default function Form(props: { closeFormCB: () => void }) {
 
   return (
     <div className="p-4 border border-gray-300 rounded-lg shadow-md">
-      <StoredForms
-        forms={getLocalFormsData()}
-        delFormCB={delForm}
-        addFormCB={addForm}
-        setFormCB={(form: formData) => setState(form)}
-      ></StoredForms>
       <div className="mt-4">
         <input
           type="text"
@@ -225,12 +219,12 @@ export default function Form(props: { closeFormCB: () => void }) {
         </button>
         <i className="fi fi-tr-square-plus"></i>
 
-        <button
+        <a
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg mr-2 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
-          onClick={props.closeFormCB}
+          href="/"
         >
           Close
-        </button>
+        </a>
         <button
           className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline-red active:bg-red-800"
           onClick={clearFormData}
