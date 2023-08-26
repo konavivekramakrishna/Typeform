@@ -18,13 +18,13 @@ function App() {
   };
 
   return (
-    <AppContainer>
+    <>
       {state === "HOME" ? (
         <Home openFormCB={openForm} />
       ) : (
         <Form closeFormCB={closeForm} />
       )}
-    </AppContainer>
+    </>
   );
 }
 
