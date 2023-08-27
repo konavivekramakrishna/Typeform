@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import logo from "../logo.svg";
 import StoredForms from "./StoredForms";
+import { useQueryParams } from "raviger";
 import { initialFormFields } from "../Utils/Storageutils";
-
 import { formData } from "../types";
 
 const getLocalFormsData: () => formData[] = () => {
@@ -15,7 +14,10 @@ const saveLocalForms = (localForms: formData[]) => {
 };
 
 export default function Home() {
+  const [{ search }, setQuery] = useQueryParams();
+
   const [forms, setForms] = useState<formData[]>(getLocalFormsData());
+  const [searchString, setSearchString] = useState("");
 
   const delForm = (id: number) => {
     const localForms = getLocalFormsData();
@@ -26,6 +28,12 @@ export default function Home() {
     }
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setQuery({ search: searchString || "" });
+    setSearchString(""); // Clear the input field after search
+  };
+
   const addForm = () => {
     const newForm = {
       id: Number(new Date()),
@@ -34,6 +42,8 @@ export default function Home() {
     };
     saveLocalForms([...forms, newForm]);
     setForms([...forms, newForm]); // Update the state here
+    setSearchString("");
+    setQuery({ search: "" });
   };
 
   useEffect(() => {
@@ -41,12 +51,27 @@ export default function Home() {
   }, [forms]);
 
   return (
-    <div className=" p-5">
+    <div className="p-5">
+      <div className="m-2 ">
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4 ">
+            <label className="m-1">Search</label>
+            <input
+              className="flex-1 border w-full border-gray-300 rounded-lg py-2 px-3 leading-tight focus:outline-none focus:border-blue-500"
+              type="text"
+              name="search"
+              value={searchString}
+              onChange={(e) => setSearchString(e.target.value)}
+            />
+          </div>
+        </form>
+      </div>
       <StoredForms
         forms={getLocalFormsData()}
+        search={search || ""}
         delFormCB={delForm}
         addFormCB={addForm}
-      ></StoredForms>
+      />
     </div>
   );
 }

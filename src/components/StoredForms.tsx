@@ -2,14 +2,18 @@ import React, { useEffect, useRef, useState } from "react";
 import { StoredFormsType, formData } from "../types";
 
 export default function StoredForms(props: StoredFormsType) {
+  const [currentSearch, setCurrentSearch] = useState(props.search || "");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = 0;
     }
-  }, [props.forms]);
+  }, [props.forms, currentSearch]);
 
+  useEffect(() => {
+    setCurrentSearch(props.search || "");
+  }, [props.search]);
   return (
     <div
       className="bg-gray-100 p-4 rounded-lg shadow-md overflow-y-auto"
@@ -27,34 +31,40 @@ export default function StoredForms(props: StoredFormsType) {
             <span className="ml-2">Add New Form</span>
           </button>
         </div>
-        {props.forms.map((form) => (
-          <div
-            key={form.id}
-            className="bg-white p-3 rounded-lg shadow-sm transition duration-300 hover:bg-blue-100"
-          >
-            <h2 className="text-lg font-semibold mb-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
-              {form.title}
-            </h2>
-            <span className="text-gray-600">
-              {form.formFields.length} Questions
-            </span>
+        {props.forms
+          .filter((form) => {
+            return form.title
+              .toLowerCase()
+              .includes(currentSearch.toLowerCase());
+          })
+          .map((form) => (
+            <div
+              key={form.id}
+              className="bg-white p-3 rounded-lg shadow-sm transition duration-300 hover:bg-blue-100"
+            >
+              <h2 className="text-lg font-semibold mb-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
+                {form.title}
+              </h2>
+              <span className="text-gray-600">
+                {form.formFields.length} Questions
+              </span>
 
-            <div className="flex justify-end space-x-1">
-              <a
-                className="text-blue-500 hover:text-blue-600 focus:outline-none"
-                href={`/forms/${form.id}`}
-              >
-                <i className="fi fi-rr-edit text-lg"></i>
-              </a>
-              <button
-                className="text-red-500 hover:text-red-600 focus:outline-none"
-                onClick={() => props.delFormCB(form.id)}
-              >
-                <i className="fi fi-rr-trash text-lg"></i>
-              </button>
+              <div className="flex justify-end space-x-1">
+                <a
+                  className="text-blue-500 hover:text-blue-600 focus:outline-none"
+                  href={`/forms/${form.id}`}
+                >
+                  <i className="fi fi-rr-edit text-lg"></i>
+                </a>
+                <button
+                  className="text-red-500 hover:text-red-600 focus:outline-none"
+                  onClick={() => props.delFormCB(form.id)}
+                >
+                  <i className="fi fi-rr-trash text-lg"></i>
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );

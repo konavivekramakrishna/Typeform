@@ -8,6 +8,7 @@ interface StoredFormsType {
   forms: formData[];
   delFormCB: (id: number) => void;
   addFormCB: () => void;
+  search: string;
 }
 
 interface formField {
