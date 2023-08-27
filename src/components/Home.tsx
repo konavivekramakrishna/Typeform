@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import logo from "../logo.svg";
 import StoredForms from "./StoredForms";
+import { initialFormFields } from "../Utils/Storageutils";
 
 import { formData } from "../types";
 
@@ -9,23 +10,43 @@ const getLocalFormsData: () => formData[] = () => {
   return savedForms ? JSON.parse(savedForms) : [];
 };
 
+const saveLocalForms = (localForms: formData[]) => {
+  localStorage.setItem("savedForms", JSON.stringify(localForms));
+};
+
 export default function Home() {
   const [forms, setForms] = useState<formData[]>(getLocalFormsData());
+
+  const delForm = (id: number) => {
+    const localForms = getLocalFormsData();
+    if (localForms.length > 1) {
+      const newLocalForms = localForms.filter((form) => form.id !== id);
+      setForms(newLocalForms);
+      saveLocalForms(newLocalForms);
+    }
+  };
+
+  const addForm = () => {
+    const newForm = {
+      id: Number(new Date()),
+      title: "Untitled Form",
+      formFields: initialFormFields,
+    };
+    saveLocalForms([...forms, newForm]);
+    setForms([...forms, newForm]); // Update the state here
+  };
 
   useEffect(() => {
     localStorage.setItem("savedForms", JSON.stringify(forms));
   }, [forms]);
 
   return (
-    <div className="flex flex-col justify-center items-center">
-      <p className="text-xl font-semibold mb-4">Welcome to the Home Page</p>
-      <a
-        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
-        href="/forms/0"
-      >
-        Open Form
-      </a>
-      <StoredForms forms={getLocalFormsData()}></StoredForms>
+    <div className=" p-5">
+      <StoredForms
+        forms={getLocalFormsData()}
+        delFormCB={delForm}
+        addFormCB={addForm}
+      ></StoredForms>
     </div>
   );
 }

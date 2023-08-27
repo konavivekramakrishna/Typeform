@@ -35,7 +35,6 @@ const getLocalFormsData: () => formData[] = () => {
   const savedForms = localStorage.getItem("savedForms");
   return savedForms ? JSON.parse(savedForms) : [];
 };
-
 const initialState: (id: number) => formData = (id) => {
   const localForms = getLocalFormsData();
   const form = localForms.find((form) => form.id === id);
