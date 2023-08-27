@@ -79,7 +79,7 @@ export default function Form(props: { formId: number }) {
     setState({
       ...state,
       formFields: state.formFields.map((field) =>
-        field.id === id ? { ...field, value } : field
+        field.id === id ? { ...field, value } : field,
       ),
     });
   };
@@ -92,7 +92,7 @@ export default function Form(props: { formId: number }) {
         setState(newLocalForms[0]);
       } else {
         const currentFormIndex = newLocalForms.findIndex(
-          (form) => form.id === state.id
+          (form) => form.id === state.id,
         );
         setState(newLocalForms[currentFormIndex]);
       }
@@ -103,7 +103,7 @@ export default function Form(props: { formId: number }) {
   const changeFormTitle = (title: string) => {
     const localForms = getLocalFormsData();
     const newLocalForms = localForms.map((form) =>
-      form.id === state.id ? { ...form, title } : form
+      form.id === state.id ? { ...form, title } : form,
     );
     saveLocalForms(newLocalForms);
   };
