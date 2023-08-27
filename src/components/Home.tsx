@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from "react";
 import StoredForms from "./StoredForms";
-import { useQueryParams } from "raviger";
-import { initialFormFields } from "../Utils/Storageutils";
+import { navigate, useQueryParams } from "raviger";
+import {
+  initialFormFields,
+  getLocalFormsData,
+  saveLocalForms,
+} from "../Utils/Storageutils";
 import { formData } from "../types";
-
-const getLocalFormsData: () => formData[] = () => {
-  const savedForms = localStorage.getItem("savedForms");
-  return savedForms ? JSON.parse(savedForms) : [];
-};
-
-const saveLocalForms = (localForms: formData[]) => {
-  localStorage.setItem("savedForms", JSON.stringify(localForms));
-};
 
 export default function Home() {
   const [{ search }, setQuery] = useQueryParams();
@@ -42,8 +37,7 @@ export default function Home() {
     };
     saveLocalForms([...forms, newForm]);
     setForms([...forms, newForm]); // Update the state here
-    setSearchString("");
-    setQuery({ search: "" });
+    navigate(`/forms/${newForm.id}`);
   };
 
   useEffect(() => {

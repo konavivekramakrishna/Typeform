@@ -50,18 +50,24 @@ export default function StoredForms(props: StoredFormsType) {
                 {form.formFields.length} Questions
               </span>
 
-              <div className="flex justify-end space-x-1">
+              <div className="flex justify-end ">
                 <Link
-                  className="text-blue-500 hover:text-blue-600 focus:outline-none"
+                  className="text-purple-500 hover:text-purple-600 focus:outline-none py-2 px-4"
+                  href={`/preview/${form.id}`}
+                >
+                  <i className="fi fi-rr-eye text-xl"></i>
+                </Link>
+                <Link
+                  className="text-blue-500 hover:text-blue-600 focus:outline-none py-2 px-4"
                   href={`/forms/${form.id}`}
                 >
-                  <i className="fi fi-rr-edit text-lg"></i>
+                  <i className="fi fi-rr-edit text-xl"></i>
                 </Link>
                 <button
-                  className="text-red-500 hover:text-red-600 focus:outline-none"
+                  className="text-red-500 hover:text-red-600 focus:outline-none py-2 px-4"
                   onClick={() => props.delFormCB(form.id)}
                 >
-                  <i className="fi fi-rr-trash text-lg"></i>
+                  <i className="fi fi-rr-trash text-xl"></i>
                 </button>
               </div>
             </div>
