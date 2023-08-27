@@ -9,6 +9,32 @@ import Form from "./components/Form";
 function App() {
   const [state, setState] = useState("HOME");
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   const closeForm = () => {
     setState("HOME");
   };
