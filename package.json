@@ -11,7 +11,6 @@
     "@types/node": "^16.18.40",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
-    "prettier": "^3.0.1",
     "raviger": "^4.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -24,7 +23,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prettier": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\""
+    "prettier": "prettier --write \"src/**/*.+(js|jsx|ts|tsx|json|css|scss|md)\"",
+    "prepare": "husky install ReactForAll/.husky"
   },
   "eslintConfig": {
     "extends": [
@@ -46,7 +46,10 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
+    "husky": "^8.0.0",
+    "lint-staged": "^14.0.1",
     "postcss": "^8.4.27",
+    "prettier": "^3.0.2",
     "tailwindcss": "^3.3.3"
   }
 }
