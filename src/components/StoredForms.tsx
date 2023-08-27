@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { StoredFormsType, formData } from "../types";
+import { Link } from "raviger";
 
 export default function StoredForms(props: StoredFormsType) {
   const [currentSearch, setCurrentSearch] = useState(props.search || "");
@@ -50,12 +51,12 @@ export default function StoredForms(props: StoredFormsType) {
               </span>
 
               <div className="flex justify-end space-x-1">
-                <a
+                <Link
                   className="text-blue-500 hover:text-blue-600 focus:outline-none"
                   href={`/forms/${form.id}`}
                 >
                   <i className="fi fi-rr-edit text-lg"></i>
-                </a>
+                </Link>
                 <button
                   className="text-red-500 hover:text-red-600 focus:outline-none"
                   onClick={() => props.delFormCB(form.id)}
