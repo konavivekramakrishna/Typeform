@@ -14,6 +14,12 @@ type MultiSelectInputType = {
   removeOptionCB: (id: number, option: string) => void;
 };
 
+export type MultiSelectPreview = {
+  options: string[];
+  value: string;
+  
+}
+
 export type RadioInputType = {
   id: number;
   label: string;
@@ -55,7 +61,7 @@ type TextField = {
   value: string;
 };
 
-type MultiSelectField = {
+export type MultiSelectField = {
   kind: "multiselect";
   id: number;
   label: string;

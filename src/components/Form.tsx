@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import LabelledInput from "./LabelledInput";
+import LabelledInput from "./Inputs/LabelledInput";
 import { Input } from "@material-tailwind/react";
 import { textFieldTypes } from "../types";
 import MultiSelectInputs from "./Inputs/MultiSelectInput";

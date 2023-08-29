@@ -1,5 +1,5 @@
 import React from "react";
-import { LabelledInputType } from "../types";
+import { LabelledInputType } from "../../types";
 
 export default function LabelledInput(props: LabelledInputType) {
   return (
