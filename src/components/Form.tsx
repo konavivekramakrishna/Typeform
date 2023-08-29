@@ -113,7 +113,7 @@ export default function Form(props: { formId: number }) {
         field.id === id &&
         (field.kind === "multiselect" || field.kind === "radio")
           ? { ...field, options: [...field.options, option] }
-          : field
+          : field,
       ),
     });
   };
@@ -125,7 +125,7 @@ export default function Form(props: { formId: number }) {
         field.id === id &&
         (field.kind === "multiselect" || field.kind === "radio")
           ? { ...field, options: field.options.filter((opt) => opt !== option) }
-          : field
+          : field,
       ),
     });
   };
@@ -134,7 +134,7 @@ export default function Form(props: { formId: number }) {
     setState({
       ...state,
       formFields: state.formFields.map((field) =>
-        field.id === id && field.kind === "text" ? { ...field, value } : field
+        field.id === id && field.kind === "text" ? { ...field, value } : field,
       ),
     });
   };
@@ -142,7 +142,7 @@ export default function Form(props: { formId: number }) {
   const changeFormTitle = (title: string) => {
     const localForms = getLocalFormsData();
     const newLocalForms = localForms.map((form) =>
-      form.id === state.id ? { ...form, title } : form
+      form.id === state.id ? { ...form, title } : form,
     );
     saveLocalForms(newLocalForms);
   };

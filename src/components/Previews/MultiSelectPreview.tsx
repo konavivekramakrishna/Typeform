@@ -27,7 +27,7 @@ type MultiSelectPreviewProps = {
 export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
   const theme = useTheme();
   const [selectedOptions, setSelectedOptions] = useState<string[]>(
-    props.value.split("|").map((option) => option.trim())
+    props.value.split("|").map((option) => option.trim()),
   );
 
   const handleChange = (event: SelectChangeEvent<typeof selectedOptions>) => {

@@ -17,8 +17,7 @@ type MultiSelectInputType = {
 export type MultiSelectPreview = {
   options: string[];
   value: string;
-  
-}
+};
 
 export type RadioInputType = {
   id: number;
