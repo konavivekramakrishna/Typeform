@@ -23,13 +23,6 @@ export const initialFormFields: formField[] = [
     fieldType: "date",
     value: "",
   },
-  {
-    kind: "text",
-    id: 5,
-    label: "Phone Number",
-    fieldType: "tel",
-    value: "",
-  },
 ];
 
 export const getLocalFormsData: () => formData[] = () => {
@@ -44,7 +37,7 @@ export const saveLocalForms = (localForms: formData[]) => {
 export const saveFormData = (currentForm: formData) => {
   const localForms = getLocalFormsData();
   const updateLocalForms = localForms.map((form) =>
-    form.id === currentForm.id ? currentForm : form,
+    form.id === currentForm.id ? currentForm : form
   );
   saveLocalForms(updateLocalForms);
 };

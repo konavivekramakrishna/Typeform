@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@flaticon/flaticon-uicons": "^2.4.0",
+    "@heroicons/react": "^2.0.18",
     "@material-tailwind/react": "^2.1.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -12,6 +13,7 @@
     "@types/node": "^16.18.40",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
+    "heroicons": "^2.0.18",
     "raviger": "^4.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

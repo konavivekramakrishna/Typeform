@@ -3,8 +3,6 @@ import { getLocalFormsData } from "../Utils/Storageutils";
 import { Link } from "raviger";
 import { formField } from "../types";
 
- 
-
 export default function PreviewForm(props: { formId: number }) {
   const [fieldIndex, setFieldIndex] = useState(0);
   const [form, setForm] = useState<string[]>([]);
@@ -13,9 +11,6 @@ export default function PreviewForm(props: { formId: number }) {
   const [state] = useState(() => {
     return getLocalFormsData().filter((form) => form.id === props.formId)[0];
   });
-
-
-
 
   const title = state.title;
 
@@ -54,7 +49,6 @@ export default function PreviewForm(props: { formId: number }) {
           {state.formFields[fieldIndex].label}
         </label>
         {renderField(state.formFields[fieldIndex])}
-         
       </div>
 
       <div className="flex justify-between items-center">

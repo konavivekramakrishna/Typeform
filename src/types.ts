@@ -4,6 +4,26 @@ type formData = {
   formFields: formField[];
 };
 
+type MultiSelectInputType = {
+  id: number;
+  label: string;
+  options: string[];
+  key: number;
+  removeFieldCB: (id: number) => void;
+  addOptionCB: (id: number, option: string) => void;
+  removeOptionCB: (id: number, option: string) => void;
+};
+
+export type RadioInputType = {
+  id: number;
+  label: string;
+  options: string[];
+  key: number;
+  removeFieldCB: (id: number) => void;
+  addOptionCB: (id: number, option: string) => void;
+  removeOptionCB: (id: number, option: string) => void;
+};
+
 type StoredFormsType = {
   forms: formData[];
   delFormCB: (id: number) => void;
@@ -11,15 +31,21 @@ type StoredFormsType = {
   search: string;
 };
 
-type textFieldTypes =
+export type textFieldTypes =
   | "text"
   | "date"
   | "checkbox"
   | "file"
   | "email"
   | "password"
-  | "number"
-  | "tel";
+  | "number";
+
+type TextArea = {
+  kind: "textarea";
+  id: number;
+  label: string;
+  value: string;
+};
 
 type TextField = {
   kind: "text";
@@ -29,15 +55,34 @@ type TextField = {
   value: string;
 };
 
-type DropdownField = {
-  kind: "dropdown";
+type MultiSelectField = {
+  kind: "multiselect";
+  id: number;
+  label: string;
+  options: string[];
+  value: string[];
+};
+
+// type RangeField = {
+//   kind: "range";
+//   id: number;
+//   label: string;
+//   min: number;
+//   max: number;
+//   value: number;
+// };
+
+export type RadioField = {
+  kind: "radio";
   id: number;
   label: string;
   options: string[];
   value: string;
 };
 
-export type formField = TextField | DropdownField;
+export type formField = TextField | MultiSelectField | RadioField | TextArea;
+
+//RadioField | RangeField;
 
 type LabelledInputType = {
   id: number;
@@ -48,4 +93,9 @@ type LabelledInputType = {
   removeFieldCB: (id: number) => void;
 };
 
-export type { formData, LabelledInputType, StoredFormsType };
+export type {
+  formData,
+  LabelledInputType,
+  StoredFormsType,
+  MultiSelectInputType,
+};
