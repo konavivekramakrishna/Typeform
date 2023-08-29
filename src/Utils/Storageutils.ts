@@ -1,29 +1,33 @@
 import { formField, formData } from "../types";
 
 export const initialFormFields: formField[] = [
-  { id: 1, label: "First Name", type: "text", value: "" },
+  { kind: "text", id: 1, label: "First Name", fieldType: "text", value: "" },
   {
     id: 2,
+    kind: "text",
     label: "Last Name",
-    type: "text",
+    fieldType: "text",
     value: "",
   },
   {
+    kind: "text",
     id: 3,
     label: "Email",
-    type: "email",
+    fieldType: "email",
     value: "",
   },
   {
+    kind: "text",
     id: 4,
     label: "Date of Birth",
-    type: "date",
+    fieldType: "date",
     value: "",
   },
   {
+    kind: "text",
     id: 5,
     label: "Phone Number",
-    type: "tel",
+    fieldType: "tel",
     value: "",
   },
 ];

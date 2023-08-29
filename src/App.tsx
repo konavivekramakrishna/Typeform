@@ -5,35 +5,18 @@ import Header from "./Header";
 import AppContainer from "./AppContainer";
 import Home from "./components/Home";
 import Form from "./components/Form";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import { ThemeProvider } from "@material-tailwind/react";
 
 function App() {
   const [state, setState] = useState("HOME");
 
-  const closeForm = () => {
-    setState("HOME");
-  };
-
-  const openForm = () => {
-    setState("FORM");
-  };
-
-  return <>{state === "HOME" ? <Home /> : <Form formId={Number(0)} />}</>;
+  return (
+    <>
+      <ThemeProvider>
+        {state === "HOME" ? <Home /> : <Form formId={Number(0)} />}
+      </ThemeProvider>
+    </>
+  );
 }
 
 export default App;

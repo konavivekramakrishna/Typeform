@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@flaticon/flaticon-uicons": "^2.4.0",
+    "@material-tailwind/react": "^2.1.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -24,7 +25,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "prettier": "prettier --write \"src/**/*.+(js|jsx|ts|tsx|json|css|scss|md)\"",
-   "prepare": "husky install"
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": [

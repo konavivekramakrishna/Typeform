@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { getLocalFormsData } from "../Utils/Storageutils";
 import { Link } from "raviger";
+import { formField } from "../types";
+
+ 
 
 export default function PreviewForm(props: { formId: number }) {
   const [fieldIndex, setFieldIndex] = useState(0);
@@ -10,6 +13,9 @@ export default function PreviewForm(props: { formId: number }) {
   const [state] = useState(() => {
     return getLocalFormsData().filter((form) => form.id === props.formId)[0];
   });
+
+
+
 
   const title = state.title;
 
@@ -23,6 +29,22 @@ export default function PreviewForm(props: { formId: number }) {
 
   const isLastField = fieldIndex === state.formFields.length - 1;
 
+  const renderField = (question: formField) => {
+    switch (question.kind) {
+      case "text":
+        return (
+          <input
+            value={fieldVal}
+            onChange={(e) => {
+              setFieldVal(e.target.value);
+            }}
+            type={state.formFields[fieldIndex].kind}
+            className="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        );
+    }
+  };
+
   return (
     <div className="mx-auto w-full p-5   rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-3">{title}</h2>
@@ -31,14 +53,8 @@ export default function PreviewForm(props: { formId: number }) {
         <label className="block text-lg font-medium mb-2">
           {state.formFields[fieldIndex].label}
         </label>
-        <input
-          value={fieldVal}
-          onChange={(e) => {
-            setFieldVal(e.target.value);
-          }}
-          type={state.formFields[fieldIndex].type}
-          className="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        {renderField(state.formFields[fieldIndex])}
+         
       </div>
 
       <div className="flex justify-between items-center">

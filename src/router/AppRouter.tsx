@@ -5,6 +5,7 @@ import App from "../App";
 import AppContainer from "../AppContainer";
 import Form from "../components/Form";
 import PreviewForm from "../components/PreviewForm";
+import { ThemeProvider } from "@material-tailwind/react";
 
 const routes = {
   "/": () => <App />,
@@ -17,5 +18,9 @@ const routes = {
 
 export default function AppRouter() {
   let routeResult = useRoutes(routes);
-  return <AppContainer>{routeResult}</AppContainer>;
+  return (
+    <ThemeProvider>
+      <AppContainer>{routeResult}</AppContainer>
+    </ThemeProvider>
+  );
 }
