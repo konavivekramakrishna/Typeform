@@ -14,14 +14,28 @@ export default function PreviewForm(props: { formId: number }) {
   const title = state.title;
 
   useEffect(() => {
-    setForm((form) => {
-      const newForm = [...form];
+    setForm((prevForm) => {
+      const newForm = [...prevForm];
       newForm[fieldIndex] = fieldVal;
       return newForm;
     });
   }, [fieldIndex, fieldVal]);
 
   const isLastField = fieldIndex === state.formFields.length - 1;
+
+  const handlePrevField = () => {
+    if (fieldIndex > 0) {
+      setFieldIndex((prevIndex) => prevIndex - 1);
+      setFieldVal(form[fieldIndex - 1] || "");
+    }
+  };
+
+  const handleNextField = () => {
+    if (fieldIndex < state.formFields.length - 1) {
+      setFieldIndex((prevIndex) => prevIndex + 1);
+      setFieldVal(form[fieldIndex + 1] || "");
+    }
+  };
 
   return (
     <div className="mx-auto w-full p-5   rounded-lg shadow-md">
@@ -45,10 +59,7 @@ export default function PreviewForm(props: { formId: number }) {
         <button
           className="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:opacity-50"
           disabled={fieldIndex === 0}
-          onClick={() => {
-            setFieldIndex((prevIndex) => prevIndex - 1);
-            setFieldVal(form[fieldIndex - 1] || "");
-          }}
+          onClick={handlePrevField}
         >
           <i className="fi fi-ss-angle-double-left"></i>
         </button>
@@ -56,10 +67,7 @@ export default function PreviewForm(props: { formId: number }) {
         <button
           className="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:opacity-50"
           disabled={fieldIndex === state.formFields.length - 1}
-          onClick={() => {
-            setFieldIndex((prevIndex) => prevIndex + 1);
-            setFieldVal(form[fieldIndex + 1] || "");
-          }}
+          onClick={handleNextField}
         >
           <i className="fi fi-ss-angle-double-right"></i>
         </button>
@@ -69,7 +77,7 @@ export default function PreviewForm(props: { formId: number }) {
             href="/"
             className="px-4 py-2 rounded-lg bg-green-500 text-white"
             onClick={() => {
-              setFieldIndex(fieldIndex + 1);
+              setFieldIndex((prevIndex) => prevIndex + 1);
               console.log(form);
             }}
           >

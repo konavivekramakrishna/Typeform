@@ -5,6 +5,7 @@ import App from "../App";
 import AppContainer from "../AppContainer";
 import Form from "../components/Form";
 import PreviewForm from "../components/PreviewForm";
+import Error from "../components/Error";
 
 const routes = {
   "/": () => <App />,
@@ -17,5 +18,10 @@ const routes = {
 
 export default function AppRouter() {
   let routeResult = useRoutes(routes);
+
+  if (routeResult === null) {
+    return <Error />;
+  }
+
   return <AppContainer>{routeResult}</AppContainer>;
 }

@@ -23,8 +23,9 @@ interface LabelledInputType {
   label: string;
   type: string;
   value: string;
-  setFieldValCB: (id: number, value: string) => void;
+  typeHandlerCB: (id: number, value: string) => void;
   removeFieldCB: (id: number) => void;
+  labelHandlerCB: (id: number, value: string) => void;
 }
 
 export type { formData, formField, LabelledInputType, StoredFormsType };
