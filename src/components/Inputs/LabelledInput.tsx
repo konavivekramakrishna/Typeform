@@ -1,6 +1,6 @@
 import React from "react";
 import { LabelledInputType } from "../../types";
-  
+
 export default function LabelledInput(props: LabelledInputType) {
   return (
     <div key={props.id} className="mb-4">
