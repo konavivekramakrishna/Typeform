@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-
 import { Input, Button } from "@material-tailwind/react";
 import { MultiSelectInputType } from "../../types";
 
 export default function MultiSelectInput(props: MultiSelectInputType) {
   const [option, setOption] = useState("");
-
   const isOptionExists = props.options.includes(option);
 
   const addOption = () => {
@@ -60,7 +58,7 @@ export default function MultiSelectInput(props: MultiSelectInputType) {
         ))}
       </div>
 
-      <div className="relative mt-3">
+      <div className="mt-3">
         <Input
           crossOrigin={""}
           type="text"
@@ -77,7 +75,7 @@ export default function MultiSelectInput(props: MultiSelectInputType) {
           size="sm"
           color="blue"
           onClick={addOption}
-          className="absolute right-1 top-1 rounded ml-2 mt-1"
+          className="mt-2"
           disabled={isOptionExists}
         >
           Add Option

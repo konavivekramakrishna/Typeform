@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { LabelledInputType } from "../../types";
+import { TextAreaInputType } from "../../types";
 import { Textarea } from "@material-tailwind/react";
 
-export default function TextAreaInput(props: LabelledInputType) {
+export default function TextAreaInput(props: TextAreaInputType) {
   const [value, setValue] = useState("");
 
   return (
@@ -16,7 +16,7 @@ export default function TextAreaInput(props: LabelledInputType) {
         onChange={(e) => setValue(e.target.value)}
         variant="standard"
         label={props.label}
-        className="flex-grow" // Take up remaining space in the flex container
+        className="flex-grow"
       />
 
       <button

@@ -113,11 +113,19 @@ export default function Form(props: { formId: number }) {
         field.id === id &&
         (field.kind === "multiselect" || field.kind === "radio")
           ? { ...field, options: [...field.options, option] }
-          : field,
+          : field
       ),
     });
   };
 
+  const labelHandle = (id: number, value: string) => {
+    setState({
+      ...state,
+      formFields: state.formFields.map((field) =>
+        field.id === id ? { ...field, label: value } : field
+      ),
+    });
+  };
   const removeOption = (id: number, option: string) => {
     setState({
       ...state,
@@ -125,7 +133,7 @@ export default function Form(props: { formId: number }) {
         field.id === id &&
         (field.kind === "multiselect" || field.kind === "radio")
           ? { ...field, options: field.options.filter((opt) => opt !== option) }
-          : field,
+          : field
       ),
     });
   };
@@ -134,7 +142,7 @@ export default function Form(props: { formId: number }) {
     setState({
       ...state,
       formFields: state.formFields.map((field) =>
-        field.id === id && field.kind === "text" ? { ...field, value } : field,
+        field.id === id && field.kind === "text" ? { ...field, value } : field
       ),
     });
   };
@@ -142,7 +150,7 @@ export default function Form(props: { formId: number }) {
   const changeFormTitle = (title: string) => {
     const localForms = getLocalFormsData();
     const newLocalForms = localForms.map((form) =>
-      form.id === state.id ? { ...form, title } : form,
+      form.id === state.id ? { ...form, title } : form
     );
     saveLocalForms(newLocalForms);
   };
@@ -173,11 +181,11 @@ export default function Form(props: { formId: number }) {
               <LabelledInput
                 id={field.id}
                 key={field.id}
+                type={field.fieldType}
                 value={field.value}
                 label={field.label}
-                fieldType={field.fieldType}
+                labelHandlerCB={labelHandle}
                 removeFieldCB={removeField}
-                setFieldValCB={setFieldVal}
               />
             );
             break;
@@ -212,7 +220,6 @@ export default function Form(props: { formId: number }) {
           case "textarea":
             return (
               <TextAreaInput
-                fieldType="textarea"
                 id={field.id}
                 key={field.id}
                 value={field.value}

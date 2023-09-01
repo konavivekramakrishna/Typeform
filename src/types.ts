@@ -89,14 +89,25 @@ export type formField = TextField | MultiSelectField | RadioField | TextArea;
 
 //RadioField | RangeField;
 
-type LabelledInputType = {
+interface LabelledInputType {
   id: number;
   label: string;
-  fieldType: string;
+  type: string;
   value: string;
-  setFieldValCB: (id: number, value: string) => void;
+
   removeFieldCB: (id: number) => void;
-};
+  labelHandlerCB: (id: number, value: string) => void;
+}
+
+export interface TextAreaInputType {
+  id: number;
+  label: string;
+  type: string;
+  value: string;
+
+  removeFieldCB: (id: number) => void;
+  labelHandlerCB: (id: number, value: string) => void;
+}
 
 export type {
   formData,
