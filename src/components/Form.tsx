@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LabelledInput from "./LabelledInput";
 import { Link } from "raviger";
 import {
@@ -49,13 +49,13 @@ export default function Form(props: { formId: number }) {
           id: Number(new Date()),
           label: newField.label,
           type: newField.type,
-          value: "", // Initialize the value as an empty string
+          value: "",
         },
       ],
     });
     setNewField({
-      label: "", // Clear the label after adding a field
-      type: "text", // Reset the type to default
+      label: "",
+      type: "text",
       value: "",
     });
   };

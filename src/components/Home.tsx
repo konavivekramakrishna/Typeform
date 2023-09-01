@@ -26,7 +26,7 @@ export default function Home() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setQuery({ search: searchString || "" });
-    setSearchString(""); // Clear the input field after search
+    setSearchString("");  
   };
 
   const addForm = () => {
@@ -36,7 +36,7 @@ export default function Home() {
       formFields: initialFormFields,
     };
     saveLocalForms([...forms, newForm]);
-    setForms([...forms, newForm]); // Update the state here
+    setForms([...forms, newForm]);
     navigate(`/forms/${newForm.id}`);
   };
 
