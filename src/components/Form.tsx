@@ -5,7 +5,8 @@ import { textFieldTypes } from "../types";
 import MultiSelectInputs from "./Inputs/MultiSelectInput";
 import RadioInput from "./Inputs/RadioInput";
 import TextAreaInput from "./Inputs/TextAreaInput";
-import { Textarea } from "@material-tailwind/react";
+
+import { Link } from "raviger";
 
 import {
   getLocalFormsData,
@@ -107,22 +108,28 @@ export default function Form(props: { formId: number }) {
   };
 
   const addOption = (id: number, option: string) => {
-    setState({
+    const updatedFormFields = state.formFields.map((field) =>
+      field.id === id &&
+      (field.kind === "multiselect" || field.kind === "radio")
+        ? { ...field, options: [...field.options, option] }
+        : field
+    );
+
+    const updatedState = {
       ...state,
-      formFields: state.formFields.map((field) =>
-        field.id === id &&
-        (field.kind === "multiselect" || field.kind === "radio")
-          ? { ...field, options: [...field.options, option] }
-          : field,
-      ),
-    });
+      formFields: updatedFormFields,
+    };
+
+    saveFormData(updatedState);
+
+    setState(updatedState);
   };
 
   const labelHandle = (id: number, value: string) => {
     setState({
       ...state,
       formFields: state.formFields.map((field) =>
-        field.id === id ? { ...field, label: value } : field,
+        field.id === id ? { ...field, label: value } : field
       ),
     });
   };
@@ -133,16 +140,7 @@ export default function Form(props: { formId: number }) {
         field.id === id &&
         (field.kind === "multiselect" || field.kind === "radio")
           ? { ...field, options: field.options.filter((opt) => opt !== option) }
-          : field,
-      ),
-    });
-  };
-
-  const setFieldVal = (id: number, value: string) => {
-    setState({
-      ...state,
-      formFields: state.formFields.map((field) =>
-        field.id === id && field.kind === "text" ? { ...field, value } : field,
+          : field
       ),
     });
   };
@@ -150,7 +148,7 @@ export default function Form(props: { formId: number }) {
   const changeFormTitle = (title: string) => {
     const localForms = getLocalFormsData();
     const newLocalForms = localForms.map((form) =>
-      form.id === state.id ? { ...form, title } : form,
+      form.id === state.id ? { ...form, title } : form
     );
     saveLocalForms(newLocalForms);
   };
@@ -158,17 +156,18 @@ export default function Form(props: { formId: number }) {
   return (
     <div className="p-4 border border-gray-300 rounded-lg shadow-md">
       <div className="mt-4">
-        <Input
-          crossOrigin={""}
-          color="blue"
-          label="Form Title"
+        <label className="p-1 m-1" htmlFor="titleinput">
+          Title
+        </label>
+        <input
+          name="titleinput"
           type="text"
-          value={state.title}
-          className="w-full py-2 px-4 border rounded-lg focus:outline-none focus:border-blue-500"
+          className="w-full p-2 border rounded-lg focus:outline-none focus:border-blue-500"
           placeholder="Enter Form Title"
+          value={state.title}
           onChange={(e) => {
             setState({ ...state, title: e.target.value });
-            changeFormTitle(e.target.value); // Update the title in local storage
+            changeFormTitle(e.target.value);
           }}
           ref={titleRef}
         />
@@ -220,12 +219,13 @@ export default function Form(props: { formId: number }) {
           case "textarea":
             return (
               <TextAreaInput
+                type="textarea"
+                labelHandlerCB={labelHandle}
                 id={field.id}
                 key={field.id}
                 value={field.value}
                 label={field.label}
                 removeFieldCB={removeField}
-                setFieldValCB={setFieldVal}
               />
             );
             break;
@@ -233,34 +233,26 @@ export default function Form(props: { formId: number }) {
           default:
             return null;
             break;
-          // Or some default behavior
         }
       })}
 
-      <div className="flex justify-between items-center mb-4">
-        <Input
-          crossOrigin={""}
-          label="New Field Label"
-          color="blue"
+      <div className="flex justify-between items-center mb-4 mt-2">
+        <label htmlFor="newFieldLabel" className="mr-2">
+          New Field Label
+        </label>
+        <input
+          id="newFieldLabel"
           type="text"
+          className="w-1/4 p-2 border rounded-lg focus:outline-none focus:border-blue-500"
           value={newField.value}
-          className="w-full py-2 px-4 border rounded-lg focus:outline-none focus:border-blue-500"
-          onChange={(e) => {
-            setNewField({
-              ...newField,
-              value: e.target.value,
-            });
-          }}
+          onChange={(e) => setNewField({ ...newField, value: e.target.value })}
         />
         <select
           value={newField.fieldType}
-          className="border-2 m-1  border-gray-300 rounded-md  mt-1  h-10 px-2 text-lg focus:outline-none focus:border-blue-500"
-          onChange={(e) => {
-            setNewField({
-              ...newField,
-              fieldType: e.target.value,
-            });
-          }}
+          className="w-1/4 p-2 border rounded-lg focus:outline-none focus:border-blue-500"
+          onChange={(e) =>
+            setNewField({ ...newField, fieldType: e.target.value })
+          }
         >
           <option value="text">Text</option>
           <option value="radio">Radio</option>
@@ -274,7 +266,7 @@ export default function Form(props: { formId: number }) {
           <option value="file">File</option>
         </select>
         <button
-          className="ml-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
           onClick={() => addField()}
         >
           Add

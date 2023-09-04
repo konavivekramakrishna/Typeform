@@ -12,7 +12,7 @@ export default function PreviewForm(props: { formId: number }) {
   const [fieldVals, setFieldVals] = useState<string[]>([]);
 
   const setMultiSelectVal = (index: number, value: string[]) => {
-    const newValue = value.join(", "); // Properly join multiselect values
+    const newValue = value.join(", ");
     const updatedFieldVals = [...fieldVals];
     updatedFieldVals[index] = newValue;
     setFieldVals(updatedFieldVals);
@@ -31,7 +31,7 @@ export default function PreviewForm(props: { formId: number }) {
   const title = state.title;
 
   useEffect(() => {
-    setForm(fieldVals); // Update the form values with fieldVals
+    setForm(fieldVals);  
   }, [fieldVals]);
 
   const isLastField = fieldIndex === state.formFields.length - 1;
@@ -72,7 +72,9 @@ export default function PreviewForm(props: { formId: number }) {
         return (
           <MultiSelectPreview
             options={question.options}
-            value={fieldVals[fieldIndex] || ""}
+            value={
+              fieldVals[fieldIndex] ? fieldVals[fieldIndex].split(", ") : []
+            }
             SetMultiSelectValCB={(value) =>
               setMultiSelectVal(fieldIndex, value)
             }
@@ -94,42 +96,57 @@ export default function PreviewForm(props: { formId: number }) {
   return (
     <div className="mx-auto w-full p-5   rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-3">{title}</h2>
-
-      <div className="mb-4">{renderField(state.formFields[fieldIndex])}</div>
-
-      <div className="flex justify-between items-center">
-        <button
-          className="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:opacity-50"
-          disabled={fieldIndex === 0}
-          onClick={() => {
-            setFieldIndex((prevIndex) => prevIndex - 1);
-          }}
-        >
-          <i className="fi fi-ss-angle-double-left"></i>
-        </button>
-
-        <button
-          className="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:opacity-50"
-          disabled={fieldIndex === state.formFields.length - 1}
-          onClick={() => {
-            setFieldIndex((prevIndex) => prevIndex + 1);
-          }}
-        >
-          <i className="fi fi-ss-angle-double-right"></i>
-        </button>
-
-        {isLastField && (
+      {state.formFields.length === 0 ? (
+        <div className="text-center">
+          <p className="text-gray-600">No questions to display.</p>
           <Link
             href="/"
-            className="px-4 py-2 rounded-lg bg-green-500 text-white"
-            onClick={() => {
-              console.log(form); // Log the final form values here
-            }}
+            className="inline-block mt-4 px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600"
           >
-            <i className="fi fi-br-check m-1 p-1"></i>
+            Go Back
           </Link>
-        )}
-      </div>
+        </div>
+      ) : (
+        <>
+          {" "}
+          <div className="mb-4">
+            {renderField(state.formFields[fieldIndex])}
+          </div>
+          <div className="flex justify-between items-center">
+            <button
+              className="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:opacity-50"
+              disabled={fieldIndex === 0}
+              onClick={() => {
+                setFieldIndex((prevIndex) => prevIndex - 1);
+              }}
+            >
+              <i className="fi fi-ss-angle-double-left"></i>
+            </button>
+
+            <button
+              className="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:opacity-50"
+              disabled={fieldIndex === state.formFields.length - 1}
+              onClick={() => {
+                setFieldIndex((prevIndex) => prevIndex + 1);
+              }}
+            >
+              <i className="fi fi-ss-angle-double-right"></i>
+            </button>
+
+            {isLastField && (
+              <Link
+                href="/"
+                className="px-4 py-2 rounded-lg bg-green-500 text-white"
+                onClick={() => {
+                  console.log(form);
+                }}
+              >
+                <i className="fi fi-br-check m-1 p-1"></i>
+              </Link>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -1,80 +1,61 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { Theme, useTheme } from "@mui/material/styles";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
 
 type MultiSelectPreviewProps = {
   options: string[];
-  value: string;
+  value: string[];
   SetMultiSelectValCB: (value: string[]) => void;
 };
 
 export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
-  const theme = useTheme();
-  const [selectedOptions, setSelectedOptions] = useState<string[]>(
-    props.value.split("|").map((option) => option.trim()),
-  );
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(props.value);
+  const [clickedOption, setClickedOption] = useState<string | null>(null);
 
-  const handleChange = (event: SelectChangeEvent<typeof selectedOptions>) => {
-    const {
-      target: { value },
-    } = event;
-    setSelectedOptions(value as string[]);
+  const toggleSelection = (option: string) => {
+    if (selectedOptions.includes(option)) {
+      setSelectedOptions(selectedOptions.filter((item) => item !== option));
+      setClickedOption(null);  
+    } else {
+      setSelectedOptions([...selectedOptions, option]);
+      setClickedOption(option);  
+    }
   };
 
   useEffect(() => {
-    const newValue = selectedOptions.join(", ").trim();
     props.SetMultiSelectValCB(selectedOptions);
   }, [selectedOptions, props.SetMultiSelectValCB]);
 
   return (
     <div>
-      <FormControl sx={{ m: 1, width: 300 }}>
-        <InputLabel id="demo-multiple-name-label">Name</InputLabel>
-        <Select
-          labelId="demo-multiple-name-label"
-          id="demo-multiple-name"
+      <div className="m-1 w-300">
+        <label
+          htmlFor="multiSelect"
+          className="block text-gray-700 text-sm font-bold mb-2"
+        >
+          Select Options
+        </label>
+        <select
+          id="multiSelect"
           multiple
-          value={selectedOptions}
-          onChange={handleChange}
-          input={<OutlinedInput label="Select" />}
-          MenuProps={MenuProps}
+          className="w-full p-2 border rounded-md"
         >
           {props.options.map((name) => (
-            <MenuItem
+            <option
               key={name}
               value={name}
-              style={getStyles(name, selectedOptions, theme)}
+              onClick={() => toggleSelection(name)}
+              style={{
+                backgroundColor:
+                  clickedOption === name ? "lightblue" : "transparent",
+                fontWeight: selectedOptions.includes(name) ? "bold" : "normal",
+                color: selectedOptions.includes(name) ? "blue" : "black",
+              }}
             >
               {name}
-            </MenuItem>
+            </option>
           ))}
-        </Select>
-      </FormControl>
+        </select>
+      </div>
     </div>
   );
-}
-
-function getStyles(name: string, selectedOptions: string[], theme: Theme) {
-  return {
-    fontWeight:
-      selectedOptions.indexOf(name) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
-  };
 }

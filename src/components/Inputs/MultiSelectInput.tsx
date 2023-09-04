@@ -1,10 +1,31 @@
-import React, { useState } from "react";
-import { Input, Button } from "@material-tailwind/react";
+import React, { useState, useEffect } from "react";
 import { MultiSelectInputType } from "../../types";
 
 export default function MultiSelectInput(props: MultiSelectInputType) {
   const [option, setOption] = useState("");
   const isOptionExists = props.options.includes(option);
+  useEffect(() => {
+    let modified = false;
+
+    if (!props.options.includes("Default Option 1")) {
+      props.addOptionCB(props.id, "Default Option 1");
+      modified = true;
+    }
+    if (!props.options.includes("Default Option 2")) {
+      props.addOptionCB(props.id, "Default Option 2");
+      modified = true;
+    }
+
+    if (
+      modified &&
+      option !== "Default Option 1" &&
+      option !== "Default Option 2"
+    ) {
+      // Call addOptionCB only if modifications were made
+      // This prevents calling it twice if both options were added
+      props.addOptionCB(props.id, option);
+    }
+  }, [props.id, props.options, option, props.addOptionCB]);
 
   const addOption = () => {
     if (option && !isOptionExists) {
@@ -12,6 +33,8 @@ export default function MultiSelectInput(props: MultiSelectInputType) {
       setOption("");
     }
   };
+
+  const canRemoveOption = props.options.length >= 3;
 
   return (
     <div className="border-2 border-solid p-5 mt-2 mb-2 rounded bg-white">
@@ -32,65 +55,47 @@ export default function MultiSelectInput(props: MultiSelectInputType) {
             className="flex items-center justify-between bg-gray-100 p-1 rounded"
           >
             <span>{opt}</span>
-            <Button
-              onClick={() => {
-                props.removeOptionCB(props.id, opt);
-              }}
-              variant="text"
-              size="sm"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-4 h-4"
+            {canRemoveOption && (
+              <button
+                onClick={() => {
+                  props.removeOptionCB(props.id, opt);
+                }}
+                className="text-red-500 hover:text-red-600 p-1 rounded"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </Button>
+                <i className="fi fi-ss-cross"></i>
+              </button>
+            )}
           </div>
         ))}
       </div>
 
       <div className="mt-3">
-        <Input
-          crossOrigin={""}
+        <input
           type="text"
-          size="md"
-          color="blue"
+          className="w-full p-2 border rounded-md"
           onChange={(e) => {
             setOption(e.target.value);
           }}
-          label="Add Option"
           value={option}
+          placeholder="Add Option"
         />
 
-        <Button
-          size="sm"
-          color="blue"
+        <button
           onClick={addOption}
-          className="mt-2"
-          disabled={isOptionExists}
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded-lg mt-2"
         >
           Add Option
-        </Button>
+        </button>
         {isOptionExists && (
           <p className="text-sm text-red-500 mt-1">Option already exists.</p>
         )}
       </div>
-
-      <Button
-        className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 rounded-lg mt-3 focus:outline-none focus:shadow-outline-red active:bg-red-500"
+      <button
+        className="bg-red-500 mt-1 hover:bg-blue-600 text-white font-bold py-2 px-1 rounded-lg focus:outline-none focus:shadow-outline-red active:bg-red-500"
         onClick={() => props.removeFieldCB(props.id)}
       >
-        Remove Component
-      </Button>
+        Remove component
+      </button>
     </div>
   );
 }

@@ -45,14 +45,14 @@ export type textFieldTypes =
   | "password"
   | "number";
 
-type TextArea = {
+export type TextArea = {
   kind: "textarea";
   id: number;
   label: string;
   value: string;
 };
 
-type TextField = {
+export type TextField = {
   kind: "text";
   id: number;
   label: string;
