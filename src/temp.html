@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Select Dropdown</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-200 p-4">
+    <div class="max-w-md mx-auto bg-white rounded-md p-4">
+        <label class="block text-gray-700 font-bold mb-2" for="multiselect">Select options:</label>
+        <div class="relative">
+            <div class="w-full p-2 border border-gray-300 rounded-md">
+                <div class="flex flex-wrap gap-2" id="selected-options">
+                    <!-- Selected options will be displayed here -->
+                </div>
+                <input type="text" id="multiselect" class="w-full focus:outline-none" placeholder="Select options"
+                    autocomplete="off">
+            </div>
+            <div class="absolute top-10 left-0 w-full bg-white border border-gray-300 rounded-md mt-2 hidden"
+                id="dropdown">
+                <!-- Options list will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const multiselectInput = document.getElementById('multiselect');
+        const selectedOptionsContainer = document.getElementById('selected-options');
+        const dropdown = document.getElementById('dropdown');
+
+        // Sample options (you can replace this with your own data)
+        const options = [
+            'Option 1',
+            'Option 2',
+            'Option 3',
+            'Option 4',
+            'Option 5',
+        ];
+
+        // Function to toggle the dropdown
+        function toggleDropdown() {
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Function to update the selected options
+        function updateSelectedOptions() {
+            selectedOptionsContainer.innerHTML = '';
+            const selectedOptions = Array.from(dropdown.querySelectorAll('input:checked'));
+            selectedOptions.forEach(option => {
+                const label = document.createElement('span');
+                label.textContent = option.value;
+                label.className = 'bg-blue-500 text-white px-2 py-1 rounded-full';
+                selectedOptionsContainer.appendChild(label);
+            });
+        }
+
+        // Create options in the dropdown
+        options.forEach(option => {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = option;
+            checkbox.className = 'mr-2';
+            checkbox.addEventListener('change', updateSelectedOptions);
+
+            const label = document.createElement('label');
+            label.textContent = option;
+
+            const optionItem = document.createElement('div');
+            optionItem.className = 'p-2';
+            optionItem.appendChild(checkbox);
+            optionItem.appendChild(label);
+
+            dropdown.appendChild(optionItem);
+        });
+
+        // Event listener to toggle the dropdown
+        multiselectInput.addEventListener('click', toggleDropdown);
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            if (!multiselectInput.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>

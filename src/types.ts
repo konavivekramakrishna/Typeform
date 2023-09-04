@@ -4,19 +4,29 @@ type formData = {
   formFields: formField[];
 };
 
+export type RadioPreviewProps = {
+  options: string[];
+  value: string;
+  label: string;
+  SetRadioValCB: (value: string) => void;
+};
+
 type MultiSelectInputType = {
   id: number;
   label: string;
   options: string[];
   key: number;
+  labelHandlerCB: (id: number, value: string) => void;
   removeFieldCB: (id: number) => void;
   addOptionCB: (id: number, option: string) => void;
   removeOptionCB: (id: number, option: string) => void;
 };
 
-export type MultiSelectPreview = {
+export type MultiSelectPreviewProps = {
   options: string[];
-  value: string;
+  value: string[];
+  label: string;
+  SetMultiSelectValCB: (value: string[]) => void;
 };
 
 export type RadioInputType = {
@@ -24,6 +34,7 @@ export type RadioInputType = {
   label: string;
   options: string[];
   key: number;
+  labelHandlerCB: (id: number, value: string) => void;
   removeFieldCB: (id: number) => void;
   addOptionCB: (id: number, option: string) => void;
   removeOptionCB: (id: number, option: string) => void;

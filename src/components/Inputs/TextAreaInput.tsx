@@ -5,20 +5,23 @@ export default function TextAreaInput(props: TextAreaInputType) {
   const [value, setValue] = useState("");
 
   return (
-    <div
-      key={props.id}
-      className="flex justify-between items-start border border-solid p-5 mt-2 mb-2 rounded bg-white"
-    >
-      <label className="block text-gray-700 text-sm font-bold mb-2">
-        {props.label}
-      </label>
+    <div className="border border-gray-300 p-4 rounded-lg mb-4">
+      <div className="flex items-center mb-2">
+        <label className="text-gray-700 text-sm font-medium">Field Name</label>
+        <input
+          className="flex-1 ml-2 border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:border-blue-500"
+          type="text"
+          value={props.label}
+          onChange={(e) => props.labelHandlerCB(props.id, e.target.value)}
+        />
+      </div>
       <textarea
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="w-full p-2 border rounded-md"
+        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
       ></textarea>
       <button
-        className="ml-2 bg-blue-500 hover:bg-red-600 text-white font-bold py-2 px-3 rounded-lg focus:outline-none focus:shadow-outline-red active:bg-red-500"
+        className="mt-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline-blue"
         onClick={() => props.removeFieldCB(props.id)}
       >
         Remove

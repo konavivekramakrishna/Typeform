@@ -60,6 +60,7 @@ export default function Home() {
           </div>
         </form>
       </div>
+
       <StoredForms
         forms={getLocalFormsData()}
         search={search || ""}

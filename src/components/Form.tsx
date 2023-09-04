@@ -56,7 +56,7 @@ export default function Form(props: { formId: number }) {
           kind: "multiselect",
           id: Number(new Date()),
           label: newField.value,
-          options: [],
+          options: ["Default Option 1", "Default Option 2"],
           value: [],
         });
         break;
@@ -65,7 +65,7 @@ export default function Form(props: { formId: number }) {
           kind: "radio",
           id: Number(new Date()),
           label: newField.value,
-          options: [],
+          options: ["Default Option 1", "Default Option 2"],
           value: "",
         });
         break;
@@ -199,6 +199,7 @@ export default function Form(props: { formId: number }) {
                 options={field.options}
                 addOptionCB={addOption}
                 removeOptionCB={removeOption}
+                labelHandlerCB={labelHandle}
               ></MultiSelectInputs>
             );
             break;
@@ -212,6 +213,7 @@ export default function Form(props: { formId: number }) {
                 removeFieldCB={removeField}
                 options={field.options}
                 addOptionCB={addOption}
+                labelHandlerCB={labelHandle}
                 removeOptionCB={removeOption}
               ></RadioInput>
             );
@@ -285,12 +287,12 @@ export default function Form(props: { formId: number }) {
         </button>
         <i className="fi fi-tr-square-plus"></i>
 
-        <a
+        <Link
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg mr-2 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
           href="/"
         >
           Close
-        </a>
+        </Link>
       </div>
     </div>
   );

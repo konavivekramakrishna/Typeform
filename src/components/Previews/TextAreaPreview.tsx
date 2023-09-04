@@ -1,3 +1,5 @@
+import React from "react";
+
 type TextAreaPreviewType = {
   label: string;
   value: string;
@@ -7,7 +9,7 @@ type TextAreaPreviewType = {
 export default function TextAreaPreview(props: TextAreaPreviewType) {
   return (
     <div className="mb-4">
-      <label className="block text-gray-700 text-sm font-bold mb-2">
+      <label className="block text-lg font-medium text-gray-800 mb-2">
         {props.label}
       </label>
       <textarea

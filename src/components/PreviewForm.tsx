@@ -31,7 +31,7 @@ export default function PreviewForm(props: { formId: number }) {
   const title = state.title;
 
   useEffect(() => {
-    setForm(fieldVals);  
+    setForm(fieldVals);
   }, [fieldVals]);
 
   const isLastField = fieldIndex === state.formFields.length - 1;
@@ -71,6 +71,7 @@ export default function PreviewForm(props: { formId: number }) {
       case "multiselect":
         return (
           <MultiSelectPreview
+            label={question.label}
             options={question.options}
             value={
               fieldVals[fieldIndex] ? fieldVals[fieldIndex].split(", ") : []
@@ -83,6 +84,7 @@ export default function PreviewForm(props: { formId: number }) {
       case "radio":
         return (
           <RadioPreview
+            label={question.label}
             options={question.options}
             value={fieldVals[fieldIndex] || ""}
             SetRadioValCB={(value) => setRadioVal(fieldIndex, value)}

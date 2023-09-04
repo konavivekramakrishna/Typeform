@@ -4,28 +4,6 @@ import { MultiSelectInputType } from "../../types";
 export default function MultiSelectInput(props: MultiSelectInputType) {
   const [option, setOption] = useState("");
   const isOptionExists = props.options.includes(option);
-  useEffect(() => {
-    let modified = false;
-
-    if (!props.options.includes("Default Option 1")) {
-      props.addOptionCB(props.id, "Default Option 1");
-      modified = true;
-    }
-    if (!props.options.includes("Default Option 2")) {
-      props.addOptionCB(props.id, "Default Option 2");
-      modified = true;
-    }
-
-    if (
-      modified &&
-      option !== "Default Option 1" &&
-      option !== "Default Option 2"
-    ) {
-      // Call addOptionCB only if modifications were made
-      // This prevents calling it twice if both options were added
-      props.addOptionCB(props.id, option);
-    }
-  }, [props.id, props.options, option, props.addOptionCB]);
 
   const addOption = () => {
     if (option && !isOptionExists) {
@@ -38,9 +16,17 @@ export default function MultiSelectInput(props: MultiSelectInputType) {
 
   return (
     <div className="border-2 border-solid p-5 mt-2 mb-2 rounded bg-white">
-      <label className="block text-gray-700 text-sm font-bold mb-2">
-        {props.label}
+      <label className="block text-gray-700 text-sm font-medium mb-1">
+        Field Name
       </label>
+      <div className="flex items-center">
+        <input
+          className="flex-1 mb-2 border border-gray-300 rounded-lg py-2 px-3 leading-tight focus:outline-none focus:border-blue-500"
+          type={"text"}
+          value={props.label}
+          onChange={(e) => props.labelHandlerCB(props.id, e.target.value)}
+        />
+      </div>
       <select className="w-full p-2 border rounded-md">
         {props.options.map((opt) => (
           <option key={opt} value={opt}>
