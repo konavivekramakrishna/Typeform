@@ -37,7 +37,7 @@ export const saveLocalForms = (localForms: formData[]) => {
 export const saveFormData = (currentForm: formData) => {
   const localForms = getLocalFormsData();
   const updateLocalForms = localForms.map((form) =>
-    form.id === currentForm.id ? currentForm : form,
+    form.id === currentForm.id ? currentForm : form
   );
   saveLocalForms(updateLocalForms);
 };
@@ -55,6 +55,5 @@ export const initialState: (id: number) => formData = (id) => {
     formFields: initialFormFields,
   };
 
-  saveLocalForms([...localForms, newForm]);
   return newForm;
 };

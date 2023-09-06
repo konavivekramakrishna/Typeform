@@ -17,6 +17,10 @@ import {
 
 export default function Form(props: { formId: number }) {
   const [state, setState] = useState(() => initialState(props.formId));
+
+  
+
+
   const [isEmpty, setIsEmpty] = useState(false);
   const [newField, setNewField] = useState({
     fieldType: "text",

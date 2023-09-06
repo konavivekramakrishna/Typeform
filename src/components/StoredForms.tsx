@@ -18,7 +18,7 @@ export default function StoredForms(props: StoredFormsType) {
   return (
     <div
       className="bg-gray-100 p-4 rounded-lg shadow-md overflow-y-auto"
-      style={{ maxHeight: "40vh" }} // Set a maximum height for the scrollable container
+      style={{ maxHeight: "40vh" }}
       ref={scrollContainerRef}
     >
       <h1 className="text-xl font-semibold mb-3">Saved Forms</h1>

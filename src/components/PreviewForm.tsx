@@ -5,6 +5,7 @@ import { formField } from "../types";
 import TextAreaPreview from "./Previews/TextAreaPreview";
 import MultiSelectPreview from "./Previews/MultiSelectPreview";
 import RadioPreview from "./Previews/RadioPreview";
+import Error from "./Error";
 
 export default function PreviewForm(props: { formId: number }) {
   const [fieldIndex, setFieldIndex] = useState(0);
@@ -28,13 +29,15 @@ export default function PreviewForm(props: { formId: number }) {
     return getLocalFormsData().filter((form) => form.id === props.formId)[0];
   });
 
-  const title = state.title;
+  const title = state?.title; // Use optional chaining to handle potentially undefined title
 
   useEffect(() => {
-    setForm(fieldVals);
+    if (fieldVals.length > 0) {
+      setForm(fieldVals);
+    }
   }, [fieldVals]);
 
-  const isLastField = fieldIndex === state.formFields.length - 1;
+  const isLastField = fieldIndex === state?.formFields?.length - 1; // Use optional chaining
 
   const renderField = (question: formField) => {
     switch (question.kind) {
@@ -51,7 +54,7 @@ export default function PreviewForm(props: { formId: number }) {
                 newFieldVals[fieldIndex] = e.target.value;
                 setFieldVals(newFieldVals);
               }}
-              type={question.kind}
+              type={question.fieldType}
               className="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </>
@@ -95,8 +98,12 @@ export default function PreviewForm(props: { formId: number }) {
     }
   };
 
+  if (!state) {
+    return <Error />;
+  }
+
   return (
-    <div className="mx-auto w-full p-5   rounded-lg shadow-md">
+    <div className="mx-auto w-full p-5 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-3">{title}</h2>
       {state.formFields.length === 0 ? (
         <div className="text-center">
@@ -127,7 +134,7 @@ export default function PreviewForm(props: { formId: number }) {
 
             <button
               className="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:opacity-50"
-              disabled={fieldIndex === state.formFields.length - 1}
+              disabled={fieldIndex === state?.formFields?.length - 1}
               onClick={() => {
                 setFieldIndex((prevIndex) => prevIndex + 1);
               }}
