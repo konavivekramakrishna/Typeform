@@ -6,7 +6,7 @@ import {
   getLocalFormsData,
   saveLocalForms,
 } from "../Utils/Storageutils";
-import { formData } from "../types";
+import { formData } from "../types/types";
 
 export default function Home() {
   const [{ search }, setQuery] = useQueryParams();

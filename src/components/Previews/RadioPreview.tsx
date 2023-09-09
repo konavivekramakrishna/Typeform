@@ -1,5 +1,5 @@
 import React from "react";
-import { RadioPreviewProps } from "../../types";
+import { RadioPreviewProps } from "../../types/types";
 
 export default function RadioPreview(props: RadioPreviewProps) {
   return (

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { StoredFormsType, formData } from "../types";
+import { StoredFormsType, formData } from "../types/types";
 import { Link } from "raviger";
 
 export default function StoredForms(props: StoredFormsType) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MultiSelectInputType } from "../../types";
+import { MultiSelectInputType } from "../../types/types";
 
 export default function MultiSelectInput(props: MultiSelectInputType) {
   const [option, setOption] = useState("");
@@ -7,7 +7,7 @@ export default function MultiSelectInput(props: MultiSelectInputType) {
 
   const addOption = () => {
     if (option && !isOptionExists) {
-      props.addOptionCB(props.id, option);
+      props.addOptionCB(option);
       setOption("");
     }
   };
@@ -24,7 +24,7 @@ export default function MultiSelectInput(props: MultiSelectInputType) {
           className="flex-1 mb-2 border border-gray-300 rounded-lg py-2 px-3 leading-tight focus:outline-none focus:border-blue-500"
           type={"text"}
           value={props.label}
-          onChange={(e) => props.labelHandlerCB(props.id, e.target.value)}
+          onChange={(e) => props.labelHandlerCB(  e.target.value)}
         />
       </div>
       <select className="w-full p-2 border rounded-md">
@@ -44,7 +44,7 @@ export default function MultiSelectInput(props: MultiSelectInputType) {
             {canRemoveOption && (
               <button
                 onClick={() => {
-                  props.removeOptionCB(props.id, opt);
+                  props.removeOptionCB(opt);
                 }}
                 className="text-red-500 hover:text-red-600 p-1 rounded"
               >

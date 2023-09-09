@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MultiSelectPreviewProps } from "../../types";
+import { MultiSelectPreviewProps } from "../../types/types";
 
 export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
   const [selectedOptions, setSelectedOptions] = useState<string[]>(props.value);

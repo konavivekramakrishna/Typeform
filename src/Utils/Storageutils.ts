@@ -1,4 +1,4 @@
-import { formField, formData } from "../types";
+import { formField, formData } from "../types/types";
 
 export const initialFormFields: formField[] = [
   { kind: "text", id: 1, label: "First Name", fieldType: "text", value: "" },

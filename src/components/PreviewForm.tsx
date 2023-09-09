@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getLocalFormsData } from "../Utils/Storageutils";
 import { Link } from "raviger";
-import { formField } from "../types";
+import { formField } from "../types/types";
 import TextAreaPreview from "./Previews/TextAreaPreview";
 import MultiSelectPreview from "./Previews/MultiSelectPreview";
 import RadioPreview from "./Previews/RadioPreview";
