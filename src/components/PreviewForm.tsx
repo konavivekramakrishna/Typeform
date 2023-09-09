@@ -10,7 +10,7 @@ import { PreviewActions } from "../types/previewReducerTypes";
 
 const previewReducer = (
   state: { fieldIndex: number; fieldVals: string[] },
-  action: PreviewActions
+  action: PreviewActions,
 ) => {
   switch (action.type) {
     case "setNull": {

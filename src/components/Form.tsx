@@ -41,7 +41,7 @@ const reducer = (state: formData, action: FormAction) => {
           field.id === action.id &&
           (field.kind === "multiselect" || field.kind === "radio")
             ? { ...field, options: [...field.options, action.option] }
-            : field
+            : field,
         ),
       };
 
@@ -55,7 +55,7 @@ const reducer = (state: formData, action: FormAction) => {
                 ...field,
                 options: field.options.filter((opt) => opt !== action.option),
               }
-            : field
+            : field,
         ),
       };
 
@@ -63,7 +63,7 @@ const reducer = (state: formData, action: FormAction) => {
       return {
         ...state,
         formFields: state.formFields.map((field) =>
-          field.id === action.id ? { ...field, label: action.label } : field
+          field.id === action.id ? { ...field, label: action.label } : field,
         ),
       };
 
@@ -163,7 +163,7 @@ export default function Form(props: { formId: number }) {
             dispatch({ type: "editFormTitle", title: e.target.value });
             const localForms = getLocalFormsData();
             const newLocalForms = localForms.map((form) =>
-              form.id === state.id ? { ...form, title: e.target.value } : form
+              form.id === state.id ? { ...form, title: e.target.value } : form,
             );
             saveLocalForms(newLocalForms);
           }}
