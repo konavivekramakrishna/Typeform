@@ -24,7 +24,7 @@ export default function MultiSelectInput(props: MultiSelectInputType) {
           className="flex-1 mb-2 border border-gray-300 rounded-lg py-2 px-3 leading-tight focus:outline-none focus:border-blue-500"
           type={"text"}
           value={props.label}
-          onChange={(e) => props.labelHandlerCB(  e.target.value)}
+          onChange={(e) => props.labelHandlerCB(e.target.value)}
         />
       </div>
       <select className="w-full p-2 border rounded-md">

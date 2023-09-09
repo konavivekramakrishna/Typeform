@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import { getLocalFormsData } from "../Utils/Storageutils";
 import { Link } from "raviger";
 import { formField } from "../types/types";
@@ -6,38 +6,55 @@ import TextAreaPreview from "./Previews/TextAreaPreview";
 import MultiSelectPreview from "./Previews/MultiSelectPreview";
 import RadioPreview from "./Previews/RadioPreview";
 import Error from "./Error";
+import { PreviewActions } from "../types/previewReducerTypes";
+
+const previewReducer = (
+  state: { fieldIndex: number; fieldVals: string[] },
+  action: PreviewActions
+) => {
+  switch (action.type) {
+    case "setNull": {
+      return { ...state, fieldVals: [] };
+    }
+    case "changeInput": {
+      return {
+        ...state,
+        fieldVals: action.value
+          ? [
+              ...state.fieldVals.slice(0, state.fieldIndex),
+              action.value,
+              ...state.fieldVals.slice(state.fieldIndex + 1),
+            ]
+          : state.fieldVals,
+      };
+    }
+    case "setIndex":
+      return { ...state, fieldIndex: action.value };
+    case "changeMultiSelect":
+      const updatedFieldVals = [...state.fieldVals];
+      updatedFieldVals[state.fieldIndex] = action.value
+        .filter((v: string) => v !== "")
+        .join(" , ");
+      return { ...state, fieldVals: updatedFieldVals };
+    default:
+      return state;
+  }
+};
 
 export default function PreviewForm(props: { formId: number }) {
-  const [fieldIndex, setFieldIndex] = useState(0);
-  const [form, setForm] = useState<string[]>([]);
-  const [fieldVals, setFieldVals] = useState<string[]>([]);
-
-  const setMultiSelectVal = (index: number, value: string[]) => {
-    const newValue = value.join(", ");
-    const updatedFieldVals = [...fieldVals];
-    updatedFieldVals[index] = newValue;
-    setFieldVals(updatedFieldVals);
+  const initialState = {
+    fieldIndex: 0,
+    fieldVals: [],
   };
-
-  const setRadioVal = (index: number, value: string) => {
-    const updatedFieldVals = [...fieldVals];
-    updatedFieldVals[index] = value;
-    setFieldVals(updatedFieldVals);
-  };
+  const [formState, dispatch] = useReducer(previewReducer, initialState);
 
   const [state] = useState(() => {
     return getLocalFormsData().filter((form) => form.id === props.formId)[0];
   });
 
-  const title = state?.title; // Use optional chaining to handle potentially undefined title
+  const title = state?.title;
 
-  useEffect(() => {
-    if (fieldVals.length > 0) {
-      setForm(fieldVals);
-    }
-  }, [fieldVals]);
-
-  const isLastField = fieldIndex === state?.formFields?.length - 1; // Use optional chaining
+  const isLastField = formState.fieldIndex === state?.formFields?.length - 1;
 
   const renderField = (question: formField) => {
     switch (question.kind) {
@@ -48,11 +65,9 @@ export default function PreviewForm(props: { formId: number }) {
               {question.label}
             </label>
             <input
-              value={fieldVals[fieldIndex] || ""}
+              value={formState.fieldVals[formState.fieldIndex] || ""}
               onChange={(e) => {
-                const newFieldVals = [...fieldVals];
-                newFieldVals[fieldIndex] = e.target.value;
-                setFieldVals(newFieldVals);
+                dispatch({ type: "changeInput", value: e.target.value });
               }}
               type={question.fieldType}
               className="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -63,11 +78,9 @@ export default function PreviewForm(props: { formId: number }) {
         return (
           <TextAreaPreview
             label={question.label}
-            value={fieldVals[fieldIndex] || ""}
+            value={formState.fieldVals[formState.fieldIndex] || ""}
             SetInputValueCB={(value) => {
-              const newFieldVals = [...fieldVals];
-              newFieldVals[fieldIndex] = value;
-              setFieldVals(newFieldVals);
+              dispatch({ type: "changeInput", value });
             }}
           />
         );
@@ -77,10 +90,12 @@ export default function PreviewForm(props: { formId: number }) {
             label={question.label}
             options={question.options}
             value={
-              fieldVals[fieldIndex] ? fieldVals[fieldIndex].split(", ") : []
+              formState.fieldVals[formState.fieldIndex]
+                ? formState.fieldVals[formState.fieldIndex].split(", ")
+                : []
             }
             SetMultiSelectValCB={(value) =>
-              setMultiSelectVal(fieldIndex, value)
+              dispatch({ type: "changeMultiSelect", value })
             }
           />
         );
@@ -89,8 +104,10 @@ export default function PreviewForm(props: { formId: number }) {
           <RadioPreview
             label={question.label}
             options={question.options}
-            value={fieldVals[fieldIndex] || ""}
-            SetRadioValCB={(value) => setRadioVal(fieldIndex, value)}
+            value={formState.fieldVals[formState.fieldIndex] || ""}
+            SetRadioValCB={(value) => {
+              dispatch({ type: "changeInput", value });
+            }}
           />
         );
       default:
@@ -119,14 +136,14 @@ export default function PreviewForm(props: { formId: number }) {
         <>
           {" "}
           <div className="mb-4">
-            {renderField(state.formFields[fieldIndex])}
+            {renderField(state.formFields[formState.fieldIndex])}
           </div>
           <div className="flex justify-between items-center">
             <button
               className="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:opacity-50"
-              disabled={fieldIndex === 0}
+              disabled={formState.fieldIndex === 0}
               onClick={() => {
-                setFieldIndex((prevIndex) => prevIndex - 1);
+                dispatch({ type: "setIndex", value: formState.fieldIndex - 1 });
               }}
             >
               <i className="fi fi-ss-angle-double-left"></i>
@@ -134,9 +151,9 @@ export default function PreviewForm(props: { formId: number }) {
 
             <button
               className="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:opacity-50"
-              disabled={fieldIndex === state?.formFields?.length - 1}
+              disabled={formState.fieldIndex === state?.formFields?.length - 1}
               onClick={() => {
-                setFieldIndex((prevIndex) => prevIndex + 1);
+                dispatch({ type: "setIndex", value: formState.fieldIndex + 1 });
               }}
             >
               <i className="fi fi-ss-angle-double-right"></i>
@@ -147,7 +164,7 @@ export default function PreviewForm(props: { formId: number }) {
                 href="/"
                 className="px-4 py-2 rounded-lg bg-green-500 text-white"
                 onClick={() => {
-                  console.log(form);
+                  console.log(formState.fieldVals);
                 }}
               >
                 <i className="fi fi-br-check m-1 p-1"></i>

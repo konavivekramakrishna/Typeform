@@ -12,7 +12,7 @@ export default function LabelledInput(props: LabelledInputType) {
           className="flex-1 border border-gray-300 rounded-lg py-2 px-3 leading-tight focus:outline-none focus:border-blue-500"
           type={"text"}
           value={props.label}
-          onChange={(e) => props.labelHandlerCB( e.target.value)}
+          onChange={(e) => props.labelHandlerCB(e.target.value)}
         />
 
         <button
