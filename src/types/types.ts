@@ -1,8 +1,4 @@
-type formData = {
-  id: number;
-  title: string;
-  formFields: formField[];
-};
+import { fieldOption } from "./formReducerTypes";
 
 export type RadioPreviewProps = {
   options: string[];
@@ -11,11 +7,11 @@ export type RadioPreviewProps = {
   SetRadioValCB: (value: string) => void;
 };
 
-type MultiSelectInputType = {
+export type MultiSelectInputType = {
   id: number;
   label: string;
   options: string[];
-  key: number;
+
   labelHandlerCB: (value: string) => void;
   removeFieldCB: (id: number) => void;
   addOptionCB: (option: string) => void;
@@ -23,7 +19,7 @@ type MultiSelectInputType = {
 };
 
 export type MultiSelectPreviewProps = {
-  options: string[];
+  options: fieldOption[];
   value: string[];
   label: string;
   SetMultiSelectValCB: (value: string[]) => void;
@@ -32,73 +28,54 @@ export type MultiSelectPreviewProps = {
 export type RadioInputType = {
   id: number;
   label: string;
-  options: string[];
-  key: number;
-  labelHandlerCB: (value: string) => void;
+  options: fieldOption[];
+  value: string;
+
+  labelHandlerCB: (id: number, value: string) => void; // Add this line
   removeFieldCB: (id: number) => void;
   addOptionCB: (option: string) => void;
   removeOptionCB: (option: string) => void;
 };
 
-type StoredFormsType = {
+export type StoredFormsType = {
   forms: formData[];
   delFormCB: (id: number) => void;
   addFormCB: () => void;
   search: string;
 };
 
-export type textFieldTypes =
-  | "text"
-  | "date"
-  | "checkbox"
-  | "file"
-  | "email"
-  | "password"
-  | "number";
-
-export type TextArea = {
-  kind: "textarea";
-  id: number;
-  label: string;
-  value: string;
-};
-
 export type TextField = {
-  kind: "text";
+  kind: "TEXT";
   id: number;
   label: string;
-  fieldType: textFieldTypes;
   value: string;
 };
 
 export type MultiSelectField = {
-  kind: "multiselect";
+  kind: "DROPDOWN";
   id: number;
   label: string;
-  options: string[];
+  options: fieldOption[];
   value: string[];
 };
 
 export type RadioField = {
-  kind: "radio";
+  kind: "RADIO";
   id: number;
   label: string;
-  options: string[];
+  options: fieldOption[];
   value: string;
 };
 
-export type formField = TextField | MultiSelectField | RadioField | TextArea;
+export type formField = TextField | MultiSelectField | RadioField;
 
-//RadioField | RangeField;
-
-interface LabelledInputType {
+export interface LabelledInputType {
   id: number;
   label: string;
   type: string;
   value: string;
-
   removeFieldCB: (id: number) => void;
-  labelHandlerCB: (value: string) => void;
+  labelHandlerCB: (id: number, value: string) => void;
 }
 
 export interface TextAreaInputType {
@@ -106,14 +83,27 @@ export interface TextAreaInputType {
   label: string;
   type: string;
   value: string;
-
   removeFieldCB: (id: number) => void;
   labelHandlerCB: (value: string) => void;
 }
 
-export type {
-  formData,
-  LabelledInputType,
-  StoredFormsType,
-  MultiSelectInputType,
+export type User = any;
+
+export type formData = {
+  id: number;
+  title: string;
+  description?: string;
+  formFields: formField[];
+};
+
+export type Form = {
+  description?: string;
+  is_public: boolean;
+  id?: number;
+  title: string;
+};
+
+export type formAnswers = {
+  form_field: number;
+  value: string;
 };

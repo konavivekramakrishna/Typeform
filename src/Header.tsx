@@ -1,8 +1,9 @@
-import React from "react";
 import logo from "./logo.svg";
 import { ActiveLink } from "raviger";
 
-export default function Header(props: { title: string }) {
+import { User } from "./types/types";
+
+export default function Header(props: { currentUser: User }) {
   return (
     <div className="flex gap-2 items-center">
       <img
@@ -16,19 +17,42 @@ export default function Header(props: { title: string }) {
         {[
           { page: "Home", url: "/" },
           { page: "About", url: "/about" },
-        ].map((link) => (
-          <ActiveLink
-            href={link.url}
-            className="text-gray-800 p-2 m-2 uppercase"
-            key={link.url}
-            exactActiveClass="text-indigo-400"
-          >
-            {link.page}
-          </ActiveLink>
+          ...(props.currentUser?.username?.length > 0
+            ? [
+                {
+                  page: "Logout",
+                  onClick: () => {
+                    localStorage.removeItem("token");
+                    window.location.reload();
+                  },
+                },
+              ]
+            : [{ page: "Login", url: "/login" }]),
+        ].map((link, id) => (
+          <div key={id}>
+            {link.url ? (
+              <ActiveLink
+                href={link.url}
+                className="text-gray-800 p-2 m-2 uppercase"
+                key={link.url}
+                exactActiveClass="text-indigo-400"
+              >
+                {link.page}
+              </ActiveLink>
+            ) : (
+              <button
+                key={link.page}
+                onClick={link.onClick}
+                className="text-grey-800 p-2 m-2 uppercase"
+              >
+                {link.page}
+              </button>
+            )}
+          </div>
         ))}
       </div>
 
-      <h1 className="text-center text-xl flex-1">{props.title}</h1>
+      <h1 className="text-center text-xl flex-1">Welcome to #Typeform</h1>
     </div>
   );
 }

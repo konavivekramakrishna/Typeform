@@ -1,22 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./index.css";
 import "./App.css";
-import Header from "./Header";
+import { me } from "./Utils/apiUtils";
+import { User } from "./types/types";
+import AppRouter from "./router/AppRouter";
 import AppContainer from "./AppContainer";
-import Home from "./components/Home";
-import Form from "./components/Form";
-import { ThemeProvider } from "@material-tailwind/react";
+import Login from "./components/Login";
 
-function App() {
-  const [state, setState] = useState("HOME");
+const fetchCurrentUser = async (
+  setCurrentUser: (currentUser: User) => void,
+) => {
+  const currentUser = await me();
+  if (currentUser.username === "") {
+    localStorage.removeItem("token");
+  }
+  setCurrentUser(currentUser);
+};
+
+export default function App() {
+  const [user, setUser] = useState<User>({
+    username: "",
+    url: "",
+    name: "",
+  });
+
+  useEffect(() => {
+    fetchCurrentUser(setUser);
+  }, []);
 
   return (
-    <>
-      <ThemeProvider>
-        {state === "HOME" ? <Home /> : <Form formId={Number(0)} />}
-      </ThemeProvider>
-    </>
+    <AppContainer currentUser={user}>
+      {user && user.username?.length > 0 ? <AppRouter /> : <Login />}
+    </AppContainer>
   );
 }
-
-export default App;

@@ -1,18 +1,61 @@
 import React, { useState, useEffect } from "react";
-import { MultiSelectInputType } from "../../types/types";
+import { fieldOption } from "../../types/formReducerTypes";
 
-export default function MultiSelectInput(props: MultiSelectInputType) {
-  const [option, setOption] = useState("");
-  const isOptionExists = props.options.includes(option);
+interface MultiSelectInputsProps {
+  id: number;
+  label: string;
+  options: fieldOption[];
+  labelHandlerCB: (id: number, value: string) => void;
+  updateOptionsCB: (id: number, options: fieldOption[]) => void;
+  removeFieldCB: (id: number) => void;
+}
+
+export default function MultiSelectInput(props: MultiSelectInputsProps) {
+  const [options, setOptions] = useState<fieldOption[]>(props.options || []); // Initialize options as an empty array if it's null or undefined
+  const [newOptionLabel, setNewOptionLabel] = useState("");
+  const [label, setLabel] = useState(props.label);
+  const [isEmpty, setIsEmpty] = useState(false);
 
   const addOption = () => {
-    if (option && !isOptionExists) {
-      props.addOptionCB(option);
-      setOption("");
+    if (newOptionLabel.trim() === "") {
+      setIsEmpty(true); // Show error message
+      return;
     }
+
+    setIsEmpty(false); // Clear error message
+
+    const option: fieldOption = {
+      id: Date.now(),
+      option: newOptionLabel,
+    };
+    setOptions([...options, option]);
+    setNewOptionLabel("");
   };
 
-  const canRemoveOption = props.options.length >= 3;
+  const canRemoveOption = options.length >= 3;
+
+  const removeOption = (id: number) => {
+    setOptions(options.filter((option) => option.id !== id));
+  };
+
+  useEffect(() => {
+    let timeout = setTimeout(() => {
+      props.labelHandlerCB(props.id, label);
+    }, 1000);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [label]);
+
+  useEffect(() => {
+    let timeout = setTimeout(() => {
+      props.updateOptionsCB(props.id, options);
+    }, 500);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [options]);
 
   return (
     <div className="border-2 border-solid p-5 mt-2 mb-2 rounded bg-white">
@@ -21,30 +64,32 @@ export default function MultiSelectInput(props: MultiSelectInputType) {
       </label>
       <div className="flex items-center">
         <input
-          className="flex-1 mb-2 border border-gray-300 rounded-lg py-2 px-3 leading-tight focus:outline-none focus:border-blue-500"
-          type={"text"}
-          value={props.label}
-          onChange={(e) => props.labelHandlerCB(e.target.value)}
+          className="flex-1 border border-gray-300 rounded-lg py-2 px-3 leading-tight focus:outline-none focus:border-blue-500 mb-5"
+          type="text"
+          value={label}
+          onChange={(e) => {
+            setLabel(e.target.value);
+          }}
         />
       </div>
       <select className="w-full p-2 border rounded-md">
-        {props.options.map((opt) => (
-          <option key={opt} value={opt}>
-            {opt}
+        {options.map((opt) => (
+          <option key={opt.id} value={opt.option}>
+            {opt.option}
           </option>
         ))}
       </select>
       <div className="mt-3 grid grid-cols-2 gap-2">
-        {props.options.map((opt) => (
+        {options.map((opt) => (
           <div
-            key={opt}
+            key={opt.id}
             className="flex items-center justify-between bg-gray-100 p-1 rounded"
           >
-            <span>{opt}</span>
+            <span>{opt.option}</span>
             {canRemoveOption && (
               <button
                 onClick={() => {
-                  props.removeOptionCB(opt);
+                  removeOption(opt.id);
                 }}
                 className="text-red-500 hover:text-red-600 p-1 rounded"
               >
@@ -60,27 +105,26 @@ export default function MultiSelectInput(props: MultiSelectInputType) {
           type="text"
           className="w-full p-2 border rounded-md"
           onChange={(e) => {
-            setOption(e.target.value);
+            setNewOptionLabel(e.target.value);
           }}
-          value={option}
+          value={newOptionLabel}
           placeholder="Add Option"
         />
-
         <button
           onClick={addOption}
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded-lg mt-2"
         >
           Add Option
         </button>
-        {isOptionExists && (
-          <p className="text-sm text-red-500 mt-1">Option already exists.</p>
-        )}
       </div>
+      {isEmpty && (
+        <p className="text-sm text-red-500 mt-1">Option cannot be empty.</p>
+      )}
       <button
-        className="bg-red-500 mt-1 hover:bg-blue-600 text-white font-bold py-2 px-1 rounded-lg focus:outline-none focus:shadow-outline-red active:bg-red-500"
+        className="bg-red-500 mt-1 hover:bg-red-600 text-white font-bold py-2 px-1 rounded-lg focus:outline-none focus:shadow-outline-red active:bg-red-500"
         onClick={() => props.removeFieldCB(props.id)}
       >
-        Remove component
+        Remove Component
       </button>
     </div>
   );

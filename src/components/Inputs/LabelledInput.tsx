@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { LabelledInputType } from "../../types/types";
 
 export default function LabelledInput(props: LabelledInputType) {
+  const [label, setLabel] = useState(props.label);
+
+  useEffect(() => {
+    let timeout = setTimeout(() => {
+      props.labelHandlerCB(props.id, label);
+    }, 1000);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [label]);
+
   return (
     <div key={props.id} className="mb-4">
       <label className="block text-gray-700 text-sm font-medium mb-1">
@@ -11,8 +22,8 @@ export default function LabelledInput(props: LabelledInputType) {
         <input
           className="flex-1 border border-gray-300 rounded-lg py-2 px-3 leading-tight focus:outline-none focus:border-blue-500"
           type={"text"}
-          value={props.label}
-          onChange={(e) => props.labelHandlerCB(e.target.value)}
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
         />
 
         <button

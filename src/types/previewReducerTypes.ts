@@ -1,26 +1,24 @@
-import React from "react";
-
-type ChangeInputValue = {
-  type: "changeInput";
+type ChangeInputAction = {
+  type: "CHANGE_INPUT";
   value: string;
 };
 
-type ChangeMultiSelectValue = {
-  type: "changeMultiSelect";
+type ChangeMultiSelectInputAction = {
+  type: "CHANGE_MULTI_SELECT_INPUT";
   value: string[];
 };
 
-type SetIndex = {
-  type: "setIndex";
-  value: number; // Assuming this should be a number, not a string
+type SetValueAction = {
+  type: "SET_VALUE";
+  value: string;
 };
 
 type SetNull = {
-  type: "setNull";
+  type: "SET_NULL";
 };
 
 export type PreviewActions =
-  | ChangeInputValue
-  | ChangeMultiSelectValue
-  | SetIndex
+  | ChangeInputAction
+  | ChangeMultiSelectInputAction
+  | SetValueAction
   | SetNull;

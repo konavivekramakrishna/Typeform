@@ -1,70 +1,103 @@
-import React, { useEffect, useRef, useReducer, useState } from "react";
+import { useEffect, useRef, useReducer, useState } from "react";
 import LabelledInput from "./Inputs/LabelledInput";
 import MultiSelectInputs from "./Inputs/MultiSelectInput";
 import RadioInput from "./Inputs/RadioInput";
-import TextAreaInput from "./Inputs/TextAreaInput";
-import { Link } from "raviger";
-
+import { Link, navigate } from "raviger";
 import {
-  getLocalFormsData,
-  saveLocalForms,
-  saveFormData,
-  initialState,
-} from "../Utils/Storageutils";
-import { formData, formField, textFieldTypes } from "../types/types";
+  MultiSelectField,
+  RadioField,
+  TextField,
+  formData,
+  formField,
+} from "../types/types";
 import { FormAction } from "../types/formReducerTypes";
+import {
+  fetchFormFields,
+  fetchFormData,
+  addFieldToForm,
+  deleteField,
+  updateField,
+  updateTitle,
+  updateFormField,
+} from "../Utils/apiUtils";
 
-const reducer = (state: formData, action: FormAction) => {
+const reducer = (state: formData, action: FormAction): formData => {
   switch (action.type) {
-    case "editFormTitle":
-      return {
-        ...state,
-        title: action.title,
-      };
-
     case "addField":
       return {
         ...state,
-        formFields: [...state.formFields, action.field],
+        formFields: [...state.formFields, action.newField],
       };
 
     case "removeField":
+      deleteField(state.id, action.id);
       return {
         ...state,
         formFields: state.formFields.filter((field) => field.id !== action.id),
       };
 
-    case "addOption":
+    case "updateFormTitle":
       return {
         ...state,
-        formFields: state.formFields.map((field) =>
-          field.id === action.id &&
-          (field.kind === "multiselect" || field.kind === "radio")
-            ? { ...field, options: [...field.options, action.option] }
-            : field,
-        ),
+        title: action.title,
       };
 
-    case "removeOption":
+    case "updateLabel": {
+      const { id, value } = action;
+      if (value.trim() === "") {
+        return state;
+      }
       return {
         ...state,
-        formFields: state.formFields.map((field) =>
-          field.id === action.id &&
-          (field.kind === "multiselect" || field.kind === "radio")
-            ? {
+        formFields: state.formFields.map((field) => {
+          if (field.id === Number(id)) {
+            if (field.kind === "DROPDOWN" || field.kind === "RADIO") {
+              return {
                 ...field,
-                options: field.options.filter((opt) => opt !== action.option),
-              }
-            : field,
-        ),
+                label: value,
+                value: [value],
+              } as unknown as RadioField;
+            } else {
+              return { ...field, label: value, value } as
+                | TextField
+                | MultiSelectField;
+            }
+          }
+          return field;
+        }),
       };
+    }
 
-    case "editFieldLabel":
+    case "updateFieldOptions": {
+      const validOptions = action.options
+        ? action.options.filter((option) => option.option.trim() !== "")
+        : [];
+      updateField(state.id, Number(action.id), { options: validOptions });
       return {
         ...state,
-        formFields: state.formFields.map((field) =>
-          field.id === action.id ? { ...field, label: action.label } : field,
-        ),
+        formFields: state.formFields.map((field) => {
+          if (
+            field.id === Number(action.id) &&
+            (field.kind === "DROPDOWN" || field.kind === "RADIO")
+          ) {
+            return { ...field, options: validOptions };
+          }
+          return field;
+        }),
+      };
+    }
+
+    case "setField":
+      return {
+        ...state,
+        formFields: action.field,
+      };
+
+    case "setFormData":
+      return {
+        ...state,
+        id: action.id,
+        title: action.title,
       };
 
     default:
@@ -72,78 +105,123 @@ const reducer = (state: formData, action: FormAction) => {
   }
 };
 
+const fetchForm = (id: number, dispatch: React.Dispatch<FormAction>) => {
+  fetchFormData(id).then((res) => {
+    dispatch({
+      type: "setFormData",
+      id: id,
+      title: res.title,
+      description: res.description,
+    });
+  });
+
+  fetchFormFields(id).then((res) => {
+    dispatch({
+      type: "setField",
+      field: res.results,
+    });
+  });
+};
+
 export default function Form(props: { formId: number }) {
-  const [state, dispatch] = useReducer(reducer, initialState(props.formId));
+  const [state, dispatch] = useReducer(reducer, {
+    id: props.formId,
+    title: "",
+    formFields: [],
+  });
+
   const [isEmpty, setIsEmpty] = useState(false);
+  const [kind, setKind] = useState<formField["kind"]>("TEXT");
+
   const [newField, setNewField] = useState({
-    fieldType: "text",
+    fieldType: "TEXT",
     value: "",
   });
   const titleRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    document.title = "Form Editor";
+    fetchForm(props.formId, dispatch);
     titleRef.current?.focus();
+
     return () => {
       document.title = "React App";
     };
-  }, []);
+  }, [props.formId]);
 
   useEffect(() => {
-    let timeout = setTimeout(() => {
-      saveFormData(state);
-    }, 1);
+    if (state.id === props.formId) {
+      navigate(`/forms/${state.id}`);
+    }
+  }, [state.id, props.formId]);
+
+  useEffect(() => {
+    if (state.title === "" || state.id === 0) return;
+    const timeout = setTimeout(() => {
+      updateTitle(props.formId, state.title);
+      console.log("Title Updated");
+    }, 3000);
+
     return () => {
       clearTimeout(timeout);
     };
-  }, [state]);
+  }, [state.title]);
 
-  const handleAddField = () => {
-    if (newField.value.trim() === "") {
-      setIsEmpty(true);
-    } else {
-      setIsEmpty(false);
+  const addFormField = async (
+    formID: number,
+    label: string,
+    kind: formField["kind"],
+  ) => {
+    if (label.trim() === "") {
+      setIsEmpty(true); // Show error message
+      return;
+    }
 
-      let newForm: formField;
-
-      switch (newField.fieldType) {
-        case "radio":
-          newForm = {
-            kind: "radio",
-            id: Date.now(),
-            label: newField.value,
-            options: ["Sample Option 1", "Sample Option 2"],
-            value: "",
-          };
-          break;
-        case "multiselect":
-          newForm = {
-            kind: "multiselect",
-            id: Date.now(),
-            label: newField.value,
-            options: ["Sample Option 1", "Sample Option 2"],
-            value: [],
-          };
-          break;
-        default:
-          newForm = {
-            kind: "text",
-            id: Date.now(),
-            label: newField.value,
-            fieldType: newField.fieldType as textFieldTypes,
-            value: "",
-          };
-      }
+    setIsEmpty(false); // Clear error message
+    try {
+      const data = await addFieldToForm(formID, {
+        label: label,
+        kind: kind,
+        ...(kind === "TEXT" && {
+          meta: {
+            description: {
+              fieldType: "text",
+            },
+          },
+        }),
+        ...((kind === "DROPDOWN" || kind === "RADIO") && {
+          options: [],
+        }),
+      });
 
       dispatch({
         type: "addField",
-        field: newForm,
+        label: label,
+        kind: kind,
+        newField: data,
       });
 
-      setNewField({
-        fieldType: "text",
-        value: "",
-      });
+      const options = [
+        { option: "Default Option 1", id: Date.now() },
+        {
+          option: "Default Option 2",
+          id: Date.now() + 1,
+        },
+      ];
+
+      if (kind === "DROPDOWN" || kind === "RADIO") {
+        updateField(formID, data.id, {
+          options: [options[0], options[1]],
+        });
+        dispatch({
+          type: "updateFieldOptions",
+          id: data.id,
+          options: [options[0], options[1]],
+        });
+      }
+
+      setNewField({ ...newField, value: "" });
+    } catch (error) {
+      console.error("An error occurred:", error);
     }
   };
 
@@ -160,12 +238,7 @@ export default function Form(props: { formId: number }) {
           placeholder="Enter Form Title"
           value={state.title}
           onChange={(e) => {
-            dispatch({ type: "editFormTitle", title: e.target.value });
-            const localForms = getLocalFormsData();
-            const newLocalForms = localForms.map((form) =>
-              form.id === state.id ? { ...form, title: e.target.value } : form,
-            );
-            saveLocalForms(newLocalForms);
+            dispatch({ type: "updateFormTitle", title: e.target.value });
           }}
           ref={titleRef}
         />
@@ -173,29 +246,34 @@ export default function Form(props: { formId: number }) {
 
       {state.formFields.map((field) => {
         switch (field.kind) {
-          case "text":
+          case "TEXT":
             return (
               <div key={field.id}>
                 <LabelledInput
                   id={field.id}
-                  type={field.fieldType}
+                  type="TEXT"
                   value={field.value}
                   label={field.label.toString()}
-                  labelHandlerCB={(value) =>
-                    dispatch({
-                      type: "editFieldLabel",
-                      id: field.id,
-                      label: value.toString(),
-                    })
-                  }
-                  removeFieldCB={() =>
-                    dispatch({ type: "removeField", id: field.id })
+                  labelHandlerCB={(id, value) => {
+                    updateFormField(state.id, {
+                      ...field,
+                      label: value,
+                    });
+                    if (value !== field.label)
+                      dispatch({
+                        type: "updateLabel",
+                        id: id,
+                        value: value,
+                      });
+                  }}
+                  removeFieldCB={(id) =>
+                    dispatch({ type: "removeField", id: id })
                   }
                 />
               </div>
             );
 
-          case "multiselect":
+          case "DROPDOWN":
             return (
               <div key={field.id}>
                 <MultiSelectInputs
@@ -205,33 +283,33 @@ export default function Form(props: { formId: number }) {
                     dispatch({ type: "removeField", id: field.id })
                   }
                   options={field.options}
-                  addOptionCB={(option) =>
-                    dispatch({
-                      type: "addOption",
-                      id: field.id,
-                      option: option.toString(),
-                    })
-                  }
-                  removeOptionCB={(option) =>
-                    dispatch({
-                      type: "removeOption",
-                      id: field.id,
-                      option: option.toString(),
-                    })
-                  }
-                  labelHandlerCB={(value) =>
-                    dispatch({
-                      type: "editFieldLabel",
-                      id: field.id,
-                      label: value.toString(),
-                    })
-                  }
-                  key={0}
+                  updateOptionsCB={(id, options) => {
+                    if (options !== field.options) {
+                      dispatch({
+                        type: "updateFieldOptions",
+                        id: id,
+                        options: options,
+                      });
+                    }
+                  }}
+                  labelHandlerCB={(id: number, value: string) => {
+                    updateFormField(state.id, {
+                      ...field,
+                      label: value,
+                    });
+                    if (value !== field.label) {
+                      dispatch({
+                        type: "updateLabel",
+                        id: id,
+                        value: value,
+                      });
+                    }
+                  }}
                 ></MultiSelectInputs>
               </div>
             );
 
-          case "radio":
+          case "RADIO":
             return (
               <div key={field.id}>
                 <RadioInput
@@ -241,51 +319,29 @@ export default function Form(props: { formId: number }) {
                     dispatch({ type: "removeField", id: field.id })
                   }
                   options={field.options}
-                  addOptionCB={(option) =>
-                    dispatch({
-                      type: "addOption",
-                      id: field.id,
-                      option: option.toString(),
-                    })
-                  }
-                  labelHandlerCB={(value) =>
-                    dispatch({
-                      type: "editFieldLabel",
-                      id: field.id,
-                      label: value.toString(),
-                    })
-                  }
-                  removeOptionCB={(option) =>
-                    dispatch({
-                      type: "removeOption",
-                      id: field.id,
-                      option: option.toString(),
-                    })
-                  }
-                  key={0}
+                  updateOptionsCB={(id, options) => {
+                    if (options !== field.options) {
+                      dispatch({
+                        type: "updateFieldOptions",
+                        id: id,
+                        options: options,
+                      });
+                    }
+                  }}
+                  labelHandlerCB={(id: number, value: string) => {
+                    updateFormField(state.id, {
+                      ...field,
+                      label: value,
+                    });
+                    if (value !== field.label) {
+                      dispatch({
+                        type: "updateLabel",
+                        id: id,
+                        value: value,
+                      });
+                    }
+                  }}
                 ></RadioInput>
-              </div>
-            );
-
-          case "textarea":
-            return (
-              <div key={field.id}>
-                <TextAreaInput
-                  type="textarea"
-                  labelHandlerCB={(value) =>
-                    dispatch({
-                      type: "editFieldLabel",
-                      id: field.id,
-                      label: value.toString(),
-                    })
-                  }
-                  id={field.id}
-                  value={field.value}
-                  label={field.label}
-                  removeFieldCB={() =>
-                    dispatch({ type: "removeField", id: field.id })
-                  }
-                />
               </div>
             );
 
@@ -306,26 +362,23 @@ export default function Form(props: { formId: number }) {
           onChange={(e) => setNewField({ ...newField, value: e.target.value })}
         />
         <select
-          value={newField.fieldType}
           className="w-1/4 p-2 border rounded-lg focus:outline-none focus:border-blue-500"
-          onChange={(e) =>
-            setNewField({ ...newField, fieldType: e.target.value })
-          }
+          value={kind}
+          onChange={(e) => {
+            setKind(e.target.value as formField["kind"]);
+          }}
         >
-          <option value="text">Text</option>
-          <option value="radio">Radio</option>
-          <option value="multiselect">Multiselect</option>
-          <option value="textarea">Textarea</option>
-          <option value="email">Email</option>
-          <option value="password">Password</option>
-          <option value="number">Number</option>
-          <option value="date">Date</option>
-          <option value="checkbox">Checkbox</option>
-          <option value="file">File</option>
+          <option value="TEXT">Text</option>
+          <option value="RADIO">Radio</option>
+          <option value="DROPDOWN">Dropdown</option>
         </select>
         <button
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
-          onClick={handleAddField} // Call the handleAddField function
+          onClick={() => {
+            addFormField(state.id, newField.value, kind);
+            setNewField({ ...newField, value: "" });
+            setKind("TEXT");
+          }}
         >
           Add
         </button>
@@ -335,14 +388,6 @@ export default function Form(props: { formId: number }) {
       )}
 
       <div className="flex justify-end">
-        <button
-          className="bg-green-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg mr-2 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
-          onClick={() => {
-            saveFormData(state);
-          }}
-        >
-          Save
-        </button>
         <i className="fi fi-tr-square-plus"></i>
 
         <Link

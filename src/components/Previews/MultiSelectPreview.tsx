@@ -1,21 +1,35 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MultiSelectPreviewProps } from "../../types/types";
+import { fieldOption } from "../../types/formReducerTypes";
+
+interface MultiSelectPreviewProps {
+  options: fieldOption[];
+  inputValue: string;
+  setMultiSelectValueCB: (value: string[]) => void;
+  label: string;
+}
 
 export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
-  const [selectedOptions, setSelectedOptions] = useState<string[]>(props.value);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(
+    props.inputValue.split(" | ") || [],
+  );
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const multiselectInputRef = useRef<HTMLDivElement>(null);
 
-  const toggleSelection = (option: string) => {
-    if (selectedOptions.includes(option)) {
-      setSelectedOptions(selectedOptions.filter((item) => item !== option));
-    } else {
-      setSelectedOptions([...selectedOptions, option]);
-    }
+  const toggleOption = (option: string) => {
+    const isSelected = selectedOptions.includes(option);
+    const updatedOptions = isSelected
+      ? selectedOptions.filter((value) => value !== option)
+      : [...selectedOptions, option];
+    setSelectedOptions(updatedOptions);
+    props.setMultiSelectValueCB(updatedOptions);
   };
 
   useEffect(() => {
-    props.SetMultiSelectValCB(selectedOptions);
+    setSelectedOptions(props.inputValue.split(" | ") || []);
+  }, [props.inputValue]);
+
+  useEffect(() => {
+    props.setMultiSelectValueCB(selectedOptions);
   }, [selectedOptions]);
 
   const toggleDropdown = () => {
@@ -71,15 +85,15 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
           }`}
         >
           {props.options.map((name) => (
-            <div key={name} className="p-2">
+            <div key={name.id} className="p-2">
               <input
                 type="checkbox"
-                value={name}
+                value={name.option}
                 className="mr-2"
-                checked={selectedOptions.includes(name)}
-                onChange={() => toggleSelection(name)}
+                checked={selectedOptions.includes(name.option)}
+                onChange={() => toggleOption(name.option)}
               />
-              <label>{name}</label>
+              <label>{name.option}</label>
             </div>
           ))}
         </div>

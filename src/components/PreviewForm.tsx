@@ -1,123 +1,193 @@
-import React, { useEffect, useState, useReducer } from "react";
-import { getLocalFormsData } from "../Utils/Storageutils";
-import { Link } from "raviger";
-import { formField } from "../types/types";
-import TextAreaPreview from "./Previews/TextAreaPreview";
+import React, { useState, useReducer, useEffect } from "react";
+import { Link, navigate } from "raviger";
 import MultiSelectPreview from "./Previews/MultiSelectPreview";
-import RadioPreview from "./Previews/RadioPreview";
 import Error from "./Error";
 import { PreviewActions } from "../types/previewReducerTypes";
+import { fetchFormData, fetchFormFields, formSubmit } from "../Utils/apiUtils";
+import { formAnswers, formField } from "../types/types";
+import RadioPreview from "./Previews/RadioPreview";
 
-const previewReducer = (
-  state: { fieldIndex: number; fieldVals: string[] },
-  action: PreviewActions,
-) => {
+const previewReducer = (state: string, action: PreviewActions): string => {
   switch (action.type) {
-    case "setNull": {
-      return { ...state, fieldVals: [] };
-    }
-    case "changeInput": {
-      return {
-        ...state,
-        fieldVals: action.value
-          ? [
-              ...state.fieldVals.slice(0, state.fieldIndex),
-              action.value,
-              ...state.fieldVals.slice(state.fieldIndex + 1),
-            ]
-          : state.fieldVals,
-      };
-    }
-    case "setIndex":
-      return { ...state, fieldIndex: action.value };
-    case "changeMultiSelect":
-      const updatedFieldVals = [...state.fieldVals];
-      updatedFieldVals[state.fieldIndex] = action.value
-        .filter((v: string) => v !== "")
-        .join(" , ");
-      return { ...state, fieldVals: updatedFieldVals };
+    case "SET_VALUE":
+      return action.value;
+    case "CHANGE_MULTI_SELECT_INPUT":
+      return action.value.filter((v: string) => v !== "").join(" | ");
+    case "SET_NULL":
+      return "";
+    case "CHANGE_INPUT":
+      return action.value;
     default:
       return state;
   }
 };
 
-export default function PreviewForm(props: { formId: number }) {
-  const initialState = {
-    fieldIndex: 0,
-    fieldVals: [],
-  };
-  const [formState, dispatch] = useReducer(previewReducer, initialState);
+const getInitialState = async (id: number) => {
+  try {
+    const [formFields, data] = await Promise.all([
+      fetchFormFields(id),
+      fetchFormData(id),
+    ]);
 
-  const [state] = useState(() => {
-    return getLocalFormsData().filter((form) => form.id === props.formId)[0];
-  });
+    if (!data || !formFields || formFields.results.length === 0) {
+      return {
+        id: 1,
+        title: "No title",
+        formFields: [],
+      };
+    }
+
+    return {
+      id: data.id,
+      title: data.title,
+      formFields: formFields.results,
+    };
+  } catch (error) {
+    console.error(error);
+    throw error; // You may want to handle this error more gracefully
+  }
+};
+
+export default function PreviewForm(props: { formId: number }) {
+  const [state, setState] = useState<{
+    id: number;
+    title: string;
+    formFields: formField[];
+  } | null>(null);
+  const [form, setForm] = useState<formAnswers[]>([]);
+  const [notFound, setNotFound] = useState(false);
+  const [stateFormIndex, setStateFormIndex] = useState(0);
+  const [inputVal, inputDispatch] = useReducer(previewReducer, "");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const initialState = await getInitialState(props.formId);
+        setState(initialState);
+      } catch (error) {
+        setNotFound(true);
+      }
+    };
+
+    fetchData();
+  }, [props.formId]);
+
+  useEffect(() => {
+    setForm((form) => {
+      const newForm = [...form];
+      if (state) {
+        newForm[stateFormIndex] = {
+          form_field: state.formFields[stateFormIndex]?.id || 0,
+          value: inputVal,
+        };
+      }
+      return newForm;
+    });
+  }, [stateFormIndex, inputVal]);
 
   const title = state?.title;
 
-  const isLastField = formState.fieldIndex === state?.formFields?.length - 1;
+  useEffect(() => {
+    const fetchFormDetailsAndFields = async () => {
+      try {
+        const formData = await fetchFormData(props.formId);
+        const formFields = await fetchFormFields(props.formId);
+
+        setState((prevState) => ({
+          ...prevState,
+          id: formData.id,
+          title: formData.title,
+          formFields: formFields.results,
+        }));
+      } catch (error) {
+        setNotFound(true);
+        console.error(error);
+      }
+    };
+
+    fetchFormDetailsAndFields();
+  }, [props.formId]);
 
   const renderField = (question: formField) => {
     switch (question.kind) {
-      case "text":
+      case "DROPDOWN":
+        return (
+          <MultiSelectPreview
+            options={question.options}
+            inputValue={inputVal}
+            setMultiSelectValueCB={(value) => {
+              inputDispatch({ type: "CHANGE_MULTI_SELECT_INPUT", value });
+            }}
+            label={question.label}
+          />
+        );
+      case "RADIO":
+        return (
+          <RadioPreview
+            options={question.options}
+            value={inputVal}
+            SetRadioValCB={(value: string) => {
+              inputDispatch({ type: "CHANGE_INPUT", value });
+            }}
+            label={question.label}
+          />
+        );
+
+      default:
         return (
           <>
             <label className="block text-lg font-medium mb-2">
               {question.label}
             </label>
             <input
-              value={formState.fieldVals[formState.fieldIndex] || ""}
+              value={inputVal}
+              type={question.kind}
               onChange={(e) => {
-                dispatch({ type: "changeInput", value: e.target.value });
+                inputDispatch({ type: "CHANGE_INPUT", value: e.target.value });
               }}
-              type={question.fieldType}
               className="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </>
         );
-      case "textarea":
-        return (
-          <TextAreaPreview
-            label={question.label}
-            value={formState.fieldVals[formState.fieldIndex] || ""}
-            SetInputValueCB={(value) => {
-              dispatch({ type: "changeInput", value });
-            }}
-          />
-        );
-      case "multiselect":
-        return (
-          <MultiSelectPreview
-            label={question.label}
-            options={question.options}
-            value={
-              formState.fieldVals[formState.fieldIndex]
-                ? formState.fieldVals[formState.fieldIndex].split(", ")
-                : []
-            }
-            SetMultiSelectValCB={(value) =>
-              dispatch({ type: "changeMultiSelect", value })
-            }
-          />
-        );
-      case "radio":
-        return (
-          <RadioPreview
-            label={question.label}
-            options={question.options}
-            value={formState.fieldVals[formState.fieldIndex] || ""}
-            SetRadioValCB={(value) => {
-              dispatch({ type: "changeInput", value });
-            }}
-          />
-        );
-      default:
-        return null;
     }
   };
 
-  if (!state) {
+  if (state === null) {
+    return <div>Loading...</div>;
+  }
+
+  if (notFound || !state.formFields || state.formFields.length === 0) {
     return <Error />;
   }
+
+  const isLastField = stateFormIndex === state.formFields.length - 1;
+
+  const isSubmitDisabled =
+    stateFormIndex !== state.formFields.length - 1 || inputVal.length === 0;
+
+  const handleNextClick = () => {
+    if (form[stateFormIndex + 1]) {
+      inputDispatch({
+        type: "SET_VALUE",
+        value: form[stateFormIndex + 1].value,
+      });
+    } else {
+      inputDispatch({ type: "SET_NULL" });
+    }
+    setStateFormIndex((prevIndex) => prevIndex + 1);
+  };
+
+  const handleSubmit = () => {
+    setStateFormIndex((prevIndex) => prevIndex + 1);
+
+    formSubmit(props.formId, form, {
+      title: state.title,
+    });
+    navigate("/");
+  };
+
+  const isNextDisabled =
+    stateFormIndex === state.formFields.length - 1 || inputVal.length === 0;
 
   return (
     <div className="mx-auto w-full p-5 rounded-lg shadow-md">
@@ -134,41 +204,42 @@ export default function PreviewForm(props: { formId: number }) {
         </div>
       ) : (
         <>
-          {" "}
           <div className="mb-4">
-            {renderField(state.formFields[formState.fieldIndex])}
+            {renderField(state.formFields[stateFormIndex])}
           </div>
           <div className="flex justify-between items-center">
             <button
               className="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:opacity-50"
-              disabled={formState.fieldIndex === 0}
+              disabled={stateFormIndex === 0}
               onClick={() => {
-                dispatch({ type: "setIndex", value: formState.fieldIndex - 1 });
+                setStateFormIndex((prevIndex) => prevIndex - 1);
+                if (form[stateFormIndex - 1]) {
+                  inputDispatch({
+                    type: "SET_VALUE",
+                    value: form[stateFormIndex - 1].value,
+                  });
+                } else {
+                  inputDispatch({ type: "SET_NULL" });
+                }
               }}
             >
               <i className="fi fi-ss-angle-double-left"></i>
             </button>
-
             <button
               className="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:opacity-50"
-              disabled={formState.fieldIndex === state?.formFields?.length - 1}
-              onClick={() => {
-                dispatch({ type: "setIndex", value: formState.fieldIndex + 1 });
-              }}
+              disabled={isNextDisabled}
+              onClick={handleNextClick}
             >
               <i className="fi fi-ss-angle-double-right"></i>
             </button>
-
             {isLastField && (
-              <Link
-                href="/"
+              <button
+                disabled={isSubmitDisabled}
                 className="px-4 py-2 rounded-lg bg-green-500 text-white"
-                onClick={() => {
-                  console.log(formState.fieldVals);
-                }}
+                onClick={handleSubmit}
               >
                 <i className="fi fi-br-check m-1 p-1"></i>
-              </Link>
+              </button>
             )}
           </div>
         </>

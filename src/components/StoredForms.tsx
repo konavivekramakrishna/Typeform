@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { StoredFormsType, formData } from "../types/types";
+import { StoredFormsType, Form, formData } from "../types/types";
 import { Link } from "raviger";
 
 export default function StoredForms(props: StoredFormsType) {
@@ -46,9 +46,7 @@ export default function StoredForms(props: StoredFormsType) {
               <h2 className="text-lg font-semibold mb-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
                 {form.title}
               </h2>
-              <span className="text-gray-600">
-                {form.formFields.length} Questions
-              </span>
+              <span className="text-gray-600">{form.description}</span>
 
               <div className="flex justify-end ">
                 <Link
@@ -57,6 +55,13 @@ export default function StoredForms(props: StoredFormsType) {
                 >
                   <i className="fi fi-rr-eye text-xl"></i>
                 </Link>
+                <Link
+                  className="text-blue-500 hover:text-blue-600 focus:outline-none py-2 px-4"
+                  href={`/results/${form.id}`}
+                >
+                  <i className="fi fi-ts-people-poll"></i>
+                </Link>
+
                 <Link
                   className="text-blue-500 hover:text-blue-600 focus:outline-none py-2 px-4"
                   href={`/forms/${form.id}`}

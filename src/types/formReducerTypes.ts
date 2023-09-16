@@ -1,42 +1,56 @@
 import { formField } from "./types";
 
-type RemoveField = {
+export type fieldOption = {
+  id: number;
+  option: string;
+};
+
+type AddFieldAction = {
+  type: "addField";
+  kind: formField["kind"];
+  newField: formField;
+  label: string;
+};
+
+type RemoveFieldAction = {
   type: "removeField";
   id: number;
 };
 
-type AddField = {
-  type: "addField";
-  field: formField;
-};
-
-type AddOption = {
-  type: "addOption";
-  id: number;
-  option: string;
-};
-
-type EditFieldLabel = {
-  type: "editFieldLabel";
-  id: number;
-  label: string;
-};
-
-type EditFormTitle = {
-  type: "editFormTitle";
+type UpdateFormTitleAction = {
+  type: "updateFormTitle";
   title: string;
 };
 
-type RemoveOption = {
-  type: "removeOption";
+type UpdateLabelAction = {
+  type: "updateLabel";
   id: number;
-  option: string;
+  value: string;
+};
+
+type UpdateFieldOptionsAction = {
+  type: "updateFieldOptions";
+  id: number;
+  options: fieldOption[];
+};
+
+type SetFieldsAction = {
+  type: "setField";
+  field: formField[];
+};
+
+type SetFormDataAction = {
+  type: "setFormData";
+  id: number;
+  title: string;
+  description: string;
 };
 
 export type FormAction =
-  | RemoveField
-  | AddField
-  | AddOption
-  | EditFieldLabel
-  | EditFormTitle
-  | RemoveOption;
+  | AddFieldAction
+  | RemoveFieldAction
+  | UpdateFormTitleAction
+  | UpdateLabelAction
+  | UpdateFieldOptionsAction
+  | SetFieldsAction
+  | SetFormDataAction;

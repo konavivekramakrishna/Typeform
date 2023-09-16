@@ -1,17 +1,63 @@
-import React, { useState } from "react";
-import { RadioInputType } from "../../types/types";
+import React, { useState, useEffect } from "react";
+import { fieldOption } from "../../types/formReducerTypes";
 
-export default function RadioInputComponent(props: RadioInputType) {
-  const [option, setOption] = useState("");
-  const isOptionExists = props.options.includes(option);
+interface RadioInputProps {
+  id: number;
+  label: string;
+  options: fieldOption[]; // Ensure that options is always an array
+  labelHandlerCB: (id: number, value: string) => void;
+  updateOptionsCB: (id: number, options: fieldOption[]) => void;
+  removeFieldCB: (id: number) => void;
+}
+
+export default function RadioInput(props: RadioInputProps) {
+  // Initialize options as an empty array if it's null or undefined
+  const [options, setOptions] = useState<fieldOption[]>(props.options || []);
+  const [newOptionLabel, setNewOptionLabel] = useState("");
+  const [label, setLabel] = useState(props.label);
+  const [isEmpty, setIsEmpty] = useState(false);
 
   const addOption = () => {
-    if (option && !isOptionExists) {
-      props.addOptionCB(option);
-      setOption("");
+    if (newOptionLabel.trim() === "") {
+      setIsEmpty(true); // Show error message
+      return;
     }
+
+    setIsEmpty(false); // Clear error message
+
+    const option: fieldOption = {
+      id: Date.now(),
+      option: newOptionLabel,
+    };
+    setOptions([...options, option]);
+    setNewOptionLabel("");
   };
-  const canRemoveOption = props.options.length >= 3;
+
+  const canRemoveOption = options.length >= 3;
+
+  const removeOption = (id: number) => {
+    setOptions(options.filter((option) => option.id !== id));
+  };
+
+  useEffect(() => {
+    let timeout = setTimeout(() => {
+      props.labelHandlerCB(props.id, label);
+    }, 1000);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [label]);
+
+  useEffect(() => {
+    let timeout = setTimeout(() => {
+      props.updateOptionsCB(props.id, options);
+    }, 500);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [options]);
+
   return (
     <div className="border border-solid p-5 mt-2 mb-2 rounded bg-white">
       <label className="block text-gray-700 text-sm font-medium mb-1">
@@ -20,37 +66,37 @@ export default function RadioInputComponent(props: RadioInputType) {
       <div className="flex items-center">
         <input
           className="flex-1 border border-gray-300 rounded-lg py-2 mb-2 px-3 leading-tight focus:outline-none focus:border-blue-500"
-          type={"text"}
-          value={props.label}
-          onChange={(e) => props.labelHandlerCB(e.target.value)}
+          type="text"
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
         />
       </div>
       <div className="w-full border rounded-md">
-        {props.options.map((opt) => (
-          <div key={opt} className="flex items-center p-2 border-b">
+        {options.map((opt) => (
+          <div key={opt.id} className="flex items-center p-2 border-b">
             <input
               type="radio"
               name="type"
-              value={opt}
-              id={`radio_${opt}`}
+              value={opt.option}
+              id={`radio_${opt.id}`}
               className="mr-2"
             />
-            <label htmlFor={`radio_${opt}`}>{opt}</label>
+            <label htmlFor={`radio_${opt.id}`}>{opt.option}</label>
           </div>
         ))}
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-2">
-        {props.options.map((opt) => (
+        {options.map((opt) => (
           <div
-            key={opt}
+            key={opt.id}
             className="flex items-center justify-between bg-gray-100 p-1 rounded"
           >
-            <span>{opt}</span>
+            <span>{opt.option}</span>
             {canRemoveOption && (
               <button
                 onClick={() => {
-                  props.removeOptionCB(opt);
+                  removeOption(opt.id);
                 }}
                 className="text-red-500 hover:text-red-600 p-1 rounded"
               >
@@ -63,11 +109,11 @@ export default function RadioInputComponent(props: RadioInputType) {
       <div className="mt-3">
         <input
           type="text"
+          value={newOptionLabel}
           className="w-full p-2 border rounded-md"
           onChange={(e) => {
-            setOption(e.target.value);
+            setNewOptionLabel(e.target.value);
           }}
-          value={option}
           placeholder="Add Option"
         />
 
@@ -77,15 +123,15 @@ export default function RadioInputComponent(props: RadioInputType) {
         >
           Add Option
         </button>
-        {isOptionExists && (
-          <p className="text-sm text-red-500 mt-1">Option already exists.</p>
-        )}
       </div>
+      {isEmpty && (
+        <p className="text-sm text-red-500 mt-1">Option cannot be empty.</p>
+      )}
       <button
-        className="bg-red-500 mt-1 hover:bg-blue-600 text-white font-bold py-2 px-1 rounded-lg focus:outline-none focus:shadow-outline-red active:bg-red-500"
+        className="bg-red-500 mt-1 hover:bg-red-600 text-white font-bold py-2 px-1 rounded-lg focus:outline-none focus:shadow-outline-red active:bg-red-500"
         onClick={() => props.removeFieldCB(props.id)}
       >
-        Remove component
+        Remove Component
       </button>
     </div>
   );
