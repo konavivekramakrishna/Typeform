@@ -1,9 +1,33 @@
+import React, { useEffect } from "react";
 import logo from "./logo.svg";
-import { ActiveLink } from "raviger";
-
+import { ActiveLink, navigate } from "raviger";
 import { User } from "./types/types";
 
 export default function Header(props: { currentUser: User }) {
+  const handleKeyPress = (event: KeyboardEvent) => {
+    switch (event.key) {
+      case "h":
+        navigate("/");
+        break;
+      case "a":
+        navigate("/about");
+        break;
+      case "l":
+        localStorage.removeItem("token");
+        window.location.reload();
+        break;
+      default:
+        break;
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyPress);
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, []);
+
   return (
     <div className="flex gap-2 items-center">
       <img
