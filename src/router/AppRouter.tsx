@@ -1,17 +1,21 @@
+import React, { lazy, Suspense } from "react";
 import { Redirect, useRoutes } from "raviger";
-import Home from "../components/Home";
-import About from "../components/About";
-import Form from "../components/Form";
-import PreviewForm from "../components/PreviewForm";
 import { ThemeProvider } from "@material-tailwind/react";
 import Error from "../components/Error";
 
-import AllSubmissions from "../components/AllSubmissions";
-import Submission from "../components/Submission";
+const About = lazy(() => import("../components/About"));
+const Form = lazy(() => import("../components/Form"));
+const PreviewForm = lazy(() => import("../components/PreviewForm"));
+const AllSubmissions = lazy(() => import("../components/AllSubmissions"));
+const Submission = lazy(() => import("../components/Submission"));
+
+const Home = lazy(() => import("../components/Home"));
 
 const routes = {
   "/submissions/:id": ({ id }: { id: string }) => (
-    <AllSubmissions formId={Number(id)} />
+    <Suspense fallback={<div>Loading...</div>}>
+      <AllSubmissions formId={Number(id)} />
+    </Suspense>
   ),
   "/submissions/:formId/answer/:id": ({
     formId,
@@ -19,13 +23,32 @@ const routes = {
   }: {
     formId: string;
     id: string;
-  }) => <Submission formId={Number(formId)} submissionId={Number(id)} />,
-  "/": () => <Home />,
-  "/about": () => <About />,
+  }) => (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Submission formId={Number(formId)} submissionId={Number(id)} />
+    </Suspense>
+  ),
+  "/": () => (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Home />
+    </Suspense>
+  ),
+  "/about": () => (
+    <Suspense fallback={<div>Loading...</div>}>
+      <About />
+    </Suspense>
+  ),
   "/login": () => <Redirect to="/" />,
-  "/forms/:id": ({ id }: { id: string }) => <Form formId={Number(id)} />,
+
+  "/forms/:id": ({ id }: { id: string }) => (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Form formId={Number(id)} />
+    </Suspense>
+  ),
   "/preview/:id": ({ id }: { id: string }) => (
-    <PreviewForm formId={Number(id)} />
+    <Suspense fallback={<div>Loading...</div>}>
+      <PreviewForm formId={Number(id)} />
+    </Suspense>
   ),
 };
 
