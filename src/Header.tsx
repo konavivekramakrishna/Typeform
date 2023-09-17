@@ -5,19 +5,21 @@ import { User } from "./types/types";
 
 export default function Header(props: { currentUser: User }) {
   const handleKeyPress = (event: KeyboardEvent) => {
-    switch (event.key) {
-      case "h":
-        navigate("/");
-        break;
-      case "a":
-        navigate("/about");
-        break;
-      case "l":
-        localStorage.removeItem("token");
-        window.location.reload();
-        break;
-      default:
-        break;
+    if (event.ctrlKey || event.metaKey) {
+      switch (event.key.toLowerCase()) {
+        case "x":
+          navigate("/");
+          break;
+        case "y":
+          navigate("/about");
+          break;
+        case "z":
+          localStorage.removeItem("token");
+          window.location.reload();
+          break;
+        default:
+          break;
+      }
     }
   };
 

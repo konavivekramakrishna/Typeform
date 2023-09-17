@@ -25,7 +25,7 @@ export default function AllSubmissions(props: { formId: number }) {
               </h2>
               <Link
                 href={`/submissions/${props.formId}/answer/${submission.id}`}
-                className="text-purple-500 hover:text-purple-600 focus:outline-none"
+                className="text-purple-500 hover:text-purple-600 focus:shadow-outline-blue focus:border-blue-500"
               >
                 <i className="fi fi-rr-eye text-xl"></i>
               </Link>

@@ -65,7 +65,7 @@ export default function RadioInput(props: RadioInputProps) {
       </label>
       <div className="flex items-center">
         <input
-          className="flex-1 border border-gray-300 rounded-lg py-2 mb-2 px-3 leading-tight focus:outline-none focus:border-blue-500"
+          className="flex-1 border border-gray-300 rounded-lg py-2 mb-2 px-3 leading-tight focus:shadow-outline-blue focus:border-blue-500"
           type="text"
           value={label}
           onChange={(e) => setLabel(e.target.value)}
@@ -128,7 +128,7 @@ export default function RadioInput(props: RadioInputProps) {
         <p className="text-sm text-red-500 mt-1">Option cannot be empty.</p>
       )}
       <button
-        className="bg-red-500 mt-1 hover:bg-red-600 text-white font-bold py-2 px-1 rounded-lg focus:outline-none focus:shadow-outline-red active:bg-red-500"
+        className="bg-red-500 mt-1 hover:bg-red-600 text-white font-bold py-2 px-1 rounded-lg focus:shadow-outline-blue focus:border-blue-500 active:bg-red-500"
         onClick={() => props.removeFieldCB(props.id)}
       >
         Remove Component

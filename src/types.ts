@@ -3,6 +3,6 @@ export type name = {
 };
 
 export type test = {
-  testname : string;
-params : string[];
-}
+  testname: string;
+  params: string[];
+};

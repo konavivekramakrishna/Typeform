@@ -73,7 +73,7 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
           <input
             type="text"
             id="multiselect"
-            className="w-full focus:outline-none"
+            className="w-full focus:shadow-outline-blue focus:border-blue-500"
             placeholder="Select options"
             autoComplete="off"
             onClick={toggleDropdown}

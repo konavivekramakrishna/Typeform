@@ -13,7 +13,7 @@ export default function TextAreaPreview(props: TextAreaPreviewType) {
         {props.label}
       </label>
       <textarea
-        className="border rounded-lg py-2 px-3 w-full text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className="border rounded-lg py-2 px-3 w-full text-gray-700 leading-tight focus:shadow-outline-blue focus:border-blue-500"
         value={props.value}
         onChange={(e) => {
           props.SetInputValueCB(e.target.value);

@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useQueryParams, Link } from "raviger";
+import { useQueryParams, Link, navigate } from "raviger";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
 import { listFormsWithPagination, deleteForm } from "../Utils/apiUtils";
 import { formData } from "../types/types";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const fetchForms = (
   setForsCB: (value: formData[]) => void,
@@ -32,10 +34,51 @@ export default function Home() {
   const limit = 5;
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const handleDelete = (id: number) => {
-    setForms(forms.filter((form) => form.id !== id));
+  const handleKeyPress = (event: KeyboardEvent) => {
+    if (event.ctrlKey || event.metaKey) {
+      switch (event.key.toLowerCase()) {
+        case "c":
+          setNewForm(true);
+          break;
 
-    deleteForm(id).then(() => fetchForms(setForms, setCount, offset, limit));
+        default:
+          break;
+      }
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyPress);
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, []);
+
+  const handleDelete = (id: number) => {
+    deleteForm(id)
+      .then(() => {
+        setForms(forms.filter((form) => form.id !== id));
+        fetchForms(setForms, setCount, offset, limit);
+        toast.success("Form deleted successfully", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+        });
+      })
+      .catch((error) => {
+        console.error("Error deleting form:", error);
+        toast.error("Error deleting form", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+        });
+      });
   };
 
   useEffect(() => {
@@ -55,12 +98,13 @@ export default function Home() {
 
   return (
     <div className="p-5">
+      <ToastContainer />
       <div className="m-2 ">
         <form onSubmit={handleSubmit}>
           <div className="mb-4 ">
             <label className="m-1">Search</label>
             <input
-              className="flex-1 border w-full border-gray-300 rounded-lg py-2 px-3 leading-tight focus:outline-none focus:border-blue-500"
+              className="flex-1 border w-full border-gray-300 rounded-lg py-2 px-3 leading-tight focus:shadow-outline-blue focus:border-blue-500"
               type="text"
               name="search"
               value={searchString}
@@ -69,17 +113,17 @@ export default function Home() {
           </div>
         </form>
       </div>
-
       <div
-        className="bg-gray-100 p-4 rounded-lg shadow-md overflow-y-auto"
+        className="bg-gray-100 p-4 rounded-lg shadow-md overflow-y-auto focus:shadow-outline-blue focus:border-blue-500"
         style={{ maxHeight: "40vh" }}
         ref={scrollContainerRef}
+        tabIndex={0}
       >
         <h1 className="text-xl font-semibold mb-3">Saved Forms</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="bg-white p-3 rounded-lg shadow-sm flex items-center justify-center transition duration-300 hover:bg-purple-100">
             <button
-              className="bg-purple-500 hover:bg-purple-600 text-white py-1 px-3 rounded focus:outline-none focus:shadow-outline-purple active:bg-purple-800"
+              className="bg-purple-500 hover:bg-purple-600 text-white py-1 px-3 rounded focus:shadow-outline-blue focus:border-blue-500 focus:shadow-outline-purple active:bg-purple-800"
               onClick={() => setNewForm(true)}
             >
               <i className="fi fi-rr-add text-lg"></i>
@@ -95,7 +139,7 @@ export default function Home() {
             .map((form) => (
               <div
                 key={form.id}
-                className="bg-white p-3 rounded-lg shadow-sm transition duration-300 hover:bg-blue-100"
+                className="bg-white p-3 rounded-lg shadow-sm focus:shadow-outline-blue focus:border-blue-500  transition duration-300 hover:bg-blue-100"
               >
                 <h2 className="text-lg font-semibold mb-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
                   {form.title}
@@ -104,26 +148,26 @@ export default function Home() {
 
                 <div className="flex justify-end ">
                   <Link
-                    className="text-purple-500 hover:text-purple-600 focus:outline-none py-2 px-4"
+                    className="text-purple-500 hover:text-purple-600 focus:shadow-outline-blue focus:border-blue-500 py-2 px-4"
                     href={`/preview/${form.id}`}
                   >
                     <i className="fi fi-rr-eye text-xl"></i>
                   </Link>
                   <Link
-                    className="text-green-500 hover:text-green-600 focus:outline-none py-2 px-4"
+                    className="text-green-500 hover:text-green-600 focus:shadow-outline-blue focus:border-blue-500 py-2 px-4"
                     href={`/submissions/${form.id}`}
                   >
                     <i className="fi fi-sr-chart-user"></i>
                   </Link>
 
                   <Link
-                    className="text-blue-500 hover:text-blue-600 focus:outline-none py-2 px-4"
+                    className="text-blue-500 hover:text-blue-600 focus:shadow-outline-blue focus:border-blue-500 py-2 px-4"
                     href={`/forms/${form.id}`}
                   >
                     <i className="fi fi-rr-edit text-xl"></i>
                   </Link>
                   <button
-                    className="text-red-500 hover:text-red-600 focus:outline-none py-2 px-4"
+                    className="text-red-500 hover:text-red-600 focus:shadow-outline-blue focus:border-blue-500 py-2 px-4"
                     onClick={() => handleDelete(form.id)}
                   >
                     <i className="fi fi-rr-trash text-xl"></i>
@@ -133,11 +177,10 @@ export default function Home() {
             ))}
         </div>
       </div>
-
       <div className="mt-8 m-5 flex justify-between items-center">
         <div className="flex items-center">
           <button
-            className="text-gray-600 hover:text-gray-900 focus:outline-none"
+            className="text-gray-600 hover:text-gray-900 focus:shadow-outline-blue focus:border-blue-500"
             onClick={() => {
               setOffset((offset) => {
                 return offset - limit >= 0 ? offset - limit : offset;
@@ -151,7 +194,7 @@ export default function Home() {
             {count}
           </span>
           <button
-            className="text-gray-600 hover:text-gray-900 focus:outline-none"
+            className="text-gray-600 hover:text-gray-900 focus:shadow-outline-blue focus:border-blue-500"
             onClick={() => {
               setOffset((offset) => {
                 return offset + limit < count ? offset + limit : offset;
@@ -165,7 +208,6 @@ export default function Home() {
           <span className="text-gray-600">Items per page: {limit}</span>
         </div>
       </div>
-
       <Modal open={newForm} closeCB={() => setNewForm(false)}>
         <CreateForm />
       </Modal>
