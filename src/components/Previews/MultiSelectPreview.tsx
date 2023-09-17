@@ -10,7 +10,7 @@ interface MultiSelectPreviewProps {
 
 export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
   const [selectedOptions, setSelectedOptions] = useState<string[]>(
-    props.inputValue.split(" | ") || []
+    props.inputValue.split(" | ") || [],
   );
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const multiselectInputRef = useRef<HTMLDivElement>(null);
@@ -28,11 +28,9 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
     setSelectedOptions(props.inputValue.split(" | ") || []);
   }, [props.inputValue]);
 
-   
   const { setMultiSelectValueCB } = props;
 
   useEffect(() => {
-  
     setMultiSelectValueCB(selectedOptions);
   }, [selectedOptions, setMultiSelectValueCB]);
 
