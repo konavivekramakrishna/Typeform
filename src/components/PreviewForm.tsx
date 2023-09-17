@@ -64,6 +64,7 @@ export default function PreviewForm(props: { formId: number }) {
       try {
         const initialState = await getInitialState(props.formId);
         setState(initialState);
+        setForm([]); // Reset the form when the form ID changes
       } catch (error) {
         setNotFound(true);
       }
@@ -73,17 +74,17 @@ export default function PreviewForm(props: { formId: number }) {
   }, [props.formId]);
 
   useEffect(() => {
-    setForm((form) => {
-      const newForm = [...form];
-      if (state) {
+    if (state) {
+      setForm((form) => {
+        const newForm = [...form];
         newForm[stateFormIndex] = {
           form_field: state.formFields[stateFormIndex]?.id || 0,
           value: inputVal,
         };
-      }
-      return newForm;
-    });
-  }, [stateFormIndex, inputVal]);
+        return newForm;
+      });
+    }
+  }, [state, stateFormIndex, inputVal]);
 
   const title = state?.title;
 

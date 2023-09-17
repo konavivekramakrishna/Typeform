@@ -6,10 +6,9 @@ export default function Modal(props: {
   open: boolean;
   closeCB: () => void;
 }) {
-  const { children, open, closeCB } = props;
   return (
     <Transition.Root show={props.open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={closeCB}>
+      <Dialog as="div" className="relative z-10" onClose={props.closeCB}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"

@@ -5,7 +5,7 @@ import Form from "../components/Form";
 import PreviewForm from "../components/PreviewForm";
 import { ThemeProvider } from "@material-tailwind/react";
 import Error from "../components/Error";
-import Login from "../components/Login";
+
 import AllSubmissions from "../components/AllSubmissions";
 import Submission from "../components/Submission";
 

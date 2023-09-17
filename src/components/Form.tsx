@@ -146,7 +146,7 @@ export default function Form(props: { formId: number }) {
     return () => {
       document.title = "React App";
     };
-  }, [props.formId]);
+  }, [props.formId, state.id]);
 
   useEffect(() => {
     if (state.id === props.formId) {
@@ -164,12 +164,12 @@ export default function Form(props: { formId: number }) {
     return () => {
       clearTimeout(timeout);
     };
-  }, [state.title]);
+  }, [props.formId, state.title, state.id]);
 
   const addFormField = async (
     formID: number,
     label: string,
-    kind: formField["kind"],
+    kind: formField["kind"]
   ) => {
     if (label.trim() === "") {
       setIsEmpty(true); // Show error message

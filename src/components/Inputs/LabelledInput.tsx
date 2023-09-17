@@ -5,13 +5,15 @@ export default function LabelledInput(props: LabelledInputType) {
   const [label, setLabel] = useState(props.label);
 
   useEffect(() => {
+    const { id, labelHandlerCB } = props;
     let timeout = setTimeout(() => {
-      props.labelHandlerCB(props.id, label);
+      labelHandlerCB(id, label);
     }, 1000);
+
     return () => {
       clearTimeout(timeout);
     };
-  }, [label]);
+  }, [label, props]);  
 
   return (
     <div key={props.id} className="mb-4">

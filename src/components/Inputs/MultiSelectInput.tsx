@@ -11,51 +11,54 @@ interface MultiSelectInputsProps {
 }
 
 export default function MultiSelectInput(props: MultiSelectInputsProps) {
-  const [options, setOptions] = useState<fieldOption[]>(props.options || []); // Initialize options as an empty array if it's null or undefined
+  const { id, label, options, labelHandlerCB, updateOptionsCB, removeFieldCB } =
+    props;
+
+  const [optionList, setOptionList] = useState<fieldOption[]>(options || []);
   const [newOptionLabel, setNewOptionLabel] = useState("");
-  const [label, setLabel] = useState(props.label);
+  const [fieldLabel, setFieldLabel] = useState(label);
   const [isEmpty, setIsEmpty] = useState(false);
 
   const addOption = () => {
     if (newOptionLabel.trim() === "") {
-      setIsEmpty(true); // Show error message
+      setIsEmpty(true);
       return;
     }
 
-    setIsEmpty(false); // Clear error message
+    setIsEmpty(false);
 
     const option: fieldOption = {
       id: Date.now(),
       option: newOptionLabel,
     };
-    setOptions([...options, option]);
+    setOptionList([...optionList, option]);
     setNewOptionLabel("");
   };
 
-  const canRemoveOption = options.length >= 3;
+  const canRemoveOption = optionList.length >= 3;
 
-  const removeOption = (id: number) => {
-    setOptions(options.filter((option) => option.id !== id));
+  const removeOption = (optionId: number) => {
+    setOptionList(optionList.filter((option) => option.id !== optionId));
   };
 
   useEffect(() => {
     let timeout = setTimeout(() => {
-      props.labelHandlerCB(props.id, label);
+      labelHandlerCB(id, fieldLabel);
     }, 1000);
     return () => {
       clearTimeout(timeout);
     };
-  }, [label]);
+  }, [id, fieldLabel, labelHandlerCB]);
 
   useEffect(() => {
     let timeout = setTimeout(() => {
-      props.updateOptionsCB(props.id, options);
+      updateOptionsCB(id, optionList);
     }, 500);
 
     return () => {
       clearTimeout(timeout);
     };
-  }, [options]);
+  }, [id, optionList, updateOptionsCB]);
 
   return (
     <div className="border-2 border-solid p-5 mt-2 mb-2 rounded bg-white">
@@ -66,21 +69,21 @@ export default function MultiSelectInput(props: MultiSelectInputsProps) {
         <input
           className="flex-1 border border-gray-300 rounded-lg py-2 px-3 leading-tight focus:shadow-outline-blue focus:border-blue-500 mb-5"
           type="text"
-          value={label}
+          value={fieldLabel}
           onChange={(e) => {
-            setLabel(e.target.value);
+            setFieldLabel(e.target.value);
           }}
         />
       </div>
       <select className="w-full p-2 border rounded-md">
-        {options.map((opt) => (
+        {optionList.map((opt) => (
           <option key={opt.id} value={opt.option}>
             {opt.option}
           </option>
         ))}
       </select>
       <div className="mt-3 grid grid-cols-2 gap-2">
-        {options.map((opt) => (
+        {optionList.map((opt) => (
           <div
             key={opt.id}
             className="flex items-center justify-between bg-gray-100 p-1 rounded"
@@ -122,7 +125,7 @@ export default function MultiSelectInput(props: MultiSelectInputsProps) {
       )}
       <button
         className="bg-red-500 mt-1 hover:bg-red-600 text-white font-bold py-2 px-1 rounded-lg focus:shadow-outline-blue focus:border-blue-500 active:bg-red-500"
-        onClick={() => props.removeFieldCB(props.id)}
+        onClick={() => removeFieldCB(id)}
       >
         Remove Component
       </button>

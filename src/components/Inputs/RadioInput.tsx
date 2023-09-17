@@ -4,59 +4,63 @@ import { fieldOption } from "../../types/formReducerTypes";
 interface RadioInputProps {
   id: number;
   label: string;
-  options: fieldOption[]; // Ensure that options is always an array
+  options: fieldOption[];
   labelHandlerCB: (id: number, value: string) => void;
   updateOptionsCB: (id: number, options: fieldOption[]) => void;
   removeFieldCB: (id: number) => void;
 }
 
 export default function RadioInput(props: RadioInputProps) {
-  // Initialize options as an empty array if it's null or undefined
-  const [options, setOptions] = useState<fieldOption[]>(props.options || []);
+  const { id, label, options, labelHandlerCB, updateOptionsCB } =
+    props;
+
+  const [localOptions, setLocalOptions] = useState<fieldOption[]>(
+    options || []
+  );
   const [newOptionLabel, setNewOptionLabel] = useState("");
-  const [label, setLabel] = useState(props.label);
+  const [localLabel, setLocalLabel] = useState(label);
   const [isEmpty, setIsEmpty] = useState(false);
 
   const addOption = () => {
     if (newOptionLabel.trim() === "") {
-      setIsEmpty(true); // Show error message
+      setIsEmpty(true);
       return;
     }
 
-    setIsEmpty(false); // Clear error message
+    setIsEmpty(false);
 
     const option: fieldOption = {
       id: Date.now(),
       option: newOptionLabel,
     };
-    setOptions([...options, option]);
+    setLocalOptions([...localOptions, option]);
     setNewOptionLabel("");
   };
 
-  const canRemoveOption = options.length >= 3;
+  const canRemoveOption = localOptions.length >= 3;
 
-  const removeOption = (id: number) => {
-    setOptions(options.filter((option) => option.id !== id));
+  const removeOption = (optionId: number) => {
+    setLocalOptions(localOptions.filter((option) => option.id !== optionId));
   };
 
   useEffect(() => {
     let timeout = setTimeout(() => {
-      props.labelHandlerCB(props.id, label);
+      labelHandlerCB(id, localLabel);
     }, 1000);
     return () => {
       clearTimeout(timeout);
     };
-  }, [label]);
+  }, [id, localLabel, labelHandlerCB]);
 
   useEffect(() => {
     let timeout = setTimeout(() => {
-      props.updateOptionsCB(props.id, options);
+      updateOptionsCB(id, localOptions);
     }, 500);
 
     return () => {
       clearTimeout(timeout);
     };
-  }, [options]);
+  }, [id, localOptions, updateOptionsCB]);
 
   return (
     <div className="border border-solid p-5 mt-2 mb-2 rounded bg-white">
@@ -68,7 +72,7 @@ export default function RadioInput(props: RadioInputProps) {
           className="flex-1 border border-gray-300 rounded-lg py-2 mb-2 px-3 leading-tight focus:shadow-outline-blue focus:border-blue-500"
           type="text"
           value={label}
-          onChange={(e) => setLabel(e.target.value)}
+          onChange={(e) => setLocalLabel(e.target.value)}
         />
       </div>
       <div className="w-full border rounded-md">
