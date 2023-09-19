@@ -47,12 +47,7 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyPress);
-    return () => {
-      document.removeEventListener("keydown", handleKeyPress);
-    };
-  }, []);
+   
 
   const handleDelete = (id: number) => {
     deleteForm(id)

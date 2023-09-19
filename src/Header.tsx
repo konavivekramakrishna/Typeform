@@ -24,9 +24,14 @@ export default function Header(props: { currentUser: User }) {
   };
 
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyPress);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      handleKeyPress(event);
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
     return () => {
-      document.removeEventListener("keydown", handleKeyPress);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
@@ -69,7 +74,7 @@ export default function Header(props: { currentUser: User }) {
               <button
                 key={link.page}
                 onClick={link.onClick}
-                className="text-grey-800 p-2 m-2 uppercase"
+                className="text-gray-800 p-2 m-2 uppercase"
               >
                 {link.page}
               </button>
