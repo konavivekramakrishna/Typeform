@@ -44,7 +44,7 @@ const getInitialState = async (id: number) => {
     };
   } catch (error) {
     console.error(error);
-    throw error; // You may want to handle this error more gracefully
+    throw error;
   }
 };
 
@@ -64,7 +64,7 @@ export default function PreviewForm(props: { formId: number }) {
       try {
         const initialState = await getInitialState(props.formId);
         setState(initialState);
-        setForm([]); // Reset the form when the form ID changes
+        setForm([]);  
       } catch (error) {
         setNotFound(true);
       }

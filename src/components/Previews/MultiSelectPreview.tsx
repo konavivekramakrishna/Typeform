@@ -28,16 +28,29 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
     setSelectedOptions(props.inputValue.split(" | ") || []);
   }, [props.inputValue]);
 
-   
   const { setMultiSelectValueCB } = props;
 
   useEffect(() => {
-  
     setMultiSelectValueCB(selectedOptions);
   }, [selectedOptions, setMultiSelectValueCB]);
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      toggleDropdown();
+    }
+  };
+
+  const handleOptionKeyPress = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+    option: string
+  ) => {
+    if (event.key === "Enter" || event.key === " ") {
+      toggleOption(option);
+    }
   };
 
   useEffect(() => {
@@ -81,6 +94,8 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
             placeholder="Select options"
             autoComplete="off"
             onClick={toggleDropdown}
+            onKeyDown={handleKeyPress}
+            tabIndex={0}
           />
         </div>
         <div
@@ -90,14 +105,21 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
         >
           {props.options.map((name) => (
             <div key={name.id} className="p-2">
-              <input
-                type="checkbox"
-                value={name.option}
-                className="mr-2"
-                checked={selectedOptions.includes(name.option)}
-                onChange={() => toggleOption(name.option)}
-              />
-              <label>{name.option}</label>
+              <label
+                tabIndex={0}
+                role="checkbox"
+                aria-checked={selectedOptions.includes(name.option)}
+              >
+                <input
+                  type="checkbox"
+                  value={name.option}
+                  className="mr-2"
+                  checked={selectedOptions.includes(name.option)}
+                  onChange={() => {}}
+                  onKeyDown={(e) => handleOptionKeyPress(e, name.option)}
+                />
+                {name.option}
+              </label>
             </div>
           ))}
         </div>
