@@ -47,8 +47,6 @@ export default function Home() {
     }
   };
 
-   
-
   const handleDelete = (id: number) => {
     deleteForm(id)
       .then(() => {

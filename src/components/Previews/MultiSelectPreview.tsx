@@ -17,9 +17,11 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
 
   const toggleOption = (option: string) => {
     const isSelected = selectedOptions.includes(option);
+
     const updatedOptions = isSelected
       ? selectedOptions.filter((value) => value !== option)
       : [...selectedOptions, option];
+
     setSelectedOptions(updatedOptions);
     props.setMultiSelectValueCB(updatedOptions);
   };
@@ -36,12 +38,6 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
-  };
-
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter" || event.key === " ") {
-      toggleDropdown();
-    }
   };
 
   const handleOptionKeyPress = (
@@ -87,6 +83,7 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
               </span>
             ))}
           </div>
+
           <input
             type="text"
             id="multiselect"
@@ -94,10 +91,11 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
             placeholder="Select options"
             autoComplete="off"
             onClick={toggleDropdown}
-            onKeyDown={handleKeyPress}
+            onKeyDown={() => {}}
             tabIndex={0}
           />
         </div>
+
         <div
           className={`absolute top-10 left-0 w-full mt-2 bg-white border border-gray-300 rounded-md  ${
             isDropdownOpen ? "" : "hidden"
@@ -115,7 +113,8 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
                   value={name.option}
                   className="mr-2"
                   checked={selectedOptions.includes(name.option)}
-                  onChange={() => {}}
+                  onChange={() => { }}
+                  onClick={() => toggleOption(name.option)}
                   onKeyDown={(e) => handleOptionKeyPress(e, name.option)}
                 />
                 {name.option}

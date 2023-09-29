@@ -13,7 +13,7 @@ export default function LabelledInput(props: LabelledInputType) {
     return () => {
       clearTimeout(timeout);
     };
-  }, [label, props]);  
+  }, [label, props]);
 
   return (
     <div key={props.id} className="mb-4">

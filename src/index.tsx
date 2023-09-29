@@ -6,7 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import * as Sentry from "@sentry/react";
 
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 
 if (process.env.REACT_APP_SENTRY_DSN) {
@@ -33,7 +33,7 @@ if (process.env.REACT_APP_SENTRY_DSN) {
 root.render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 );
 
 // If you want to start measuring performance in your app, pass a function

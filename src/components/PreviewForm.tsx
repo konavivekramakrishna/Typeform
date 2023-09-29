@@ -64,7 +64,7 @@ export default function PreviewForm(props: { formId: number }) {
       try {
         const initialState = await getInitialState(props.formId);
         setState(initialState);
-        setForm([]);  
+        setForm([]);
       } catch (error) {
         setNotFound(true);
       }
@@ -143,6 +143,7 @@ export default function PreviewForm(props: { formId: number }) {
             <input
               value={inputVal}
               type={question.kind}
+              onKeyPress={handleKeyPress}
               onChange={(e) => {
                 inputDispatch({ type: "CHANGE_INPUT", value: e.target.value });
               }}
@@ -186,7 +187,16 @@ export default function PreviewForm(props: { formId: number }) {
     });
     navigate("/");
   };
-
+const handleKeyPress = (e:any) => {
+  if (e.key === "Enter") {
+    e.preventDefault();  
+    if (isLastField) {
+      handleSubmit(); 
+    } else {
+      handleNextClick();  
+    }
+  }
+};
   const isNextDisabled =
     stateFormIndex === state.formFields.length - 1 || inputVal.length === 0;
 

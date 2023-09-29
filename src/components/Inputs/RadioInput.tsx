@@ -11,11 +11,10 @@ interface RadioInputProps {
 }
 
 export default function RadioInput(props: RadioInputProps) {
-  const { id, label, options, labelHandlerCB, updateOptionsCB } =
-    props;
+  const { id, label, options, labelHandlerCB, updateOptionsCB } = props;
 
   const [localOptions, setLocalOptions] = useState<fieldOption[]>(
-    options || []
+    options || [],
   );
   const [newOptionLabel, setNewOptionLabel] = useState("");
   const [localLabel, setLocalLabel] = useState(label);

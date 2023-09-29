@@ -169,7 +169,7 @@ export default function Form(props: { formId: number }) {
   const addFormField = async (
     formID: number,
     label: string,
-    kind: formField["kind"]
+    kind: formField["kind"],
   ) => {
     if (label.trim() === "") {
       setIsEmpty(true); // Show error message
