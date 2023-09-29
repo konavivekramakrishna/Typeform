@@ -187,16 +187,16 @@ export default function PreviewForm(props: { formId: number }) {
     });
     navigate("/");
   };
-const handleKeyPress = (e:any) => {
-  if (e.key === "Enter") {
-    e.preventDefault();  
-    if (isLastField) {
-      handleSubmit(); 
-    } else {
-      handleNextClick();  
+  const handleKeyPress = (e: any) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (isLastField) {
+        handleSubmit();
+      } else {
+        handleNextClick();
+      }
     }
-  }
-};
+  };
   const isNextDisabled =
     stateFormIndex === state.formFields.length - 1 || inputVal.length === 0;
 

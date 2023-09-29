@@ -13,7 +13,10 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
     props.inputValue.split(" | ") || []
   );
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [isOptionsFocused, setOptionsFocused] = useState(false);
+  const [isDropdownFirstOpen, setDropdownFirstOpen] = useState(true); // New state variable
   const multiselectInputRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const toggleOption = (option: string) => {
     const isSelected = selectedOptions.includes(option);
@@ -32,6 +35,30 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
 
   const { setMultiSelectValueCB } = props;
 
+  const handleButtonClick = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      toggleDropdown();
+      if (!isDropdownOpen) {
+        setOptionsFocused(true);
+        if (isDropdownFirstOpen) {
+          setDropdownFirstOpen(false);
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (buttonRef.current) {
+      buttonRef.current.addEventListener("keydown", handleButtonClick);
+    }
+
+    return () => {
+      if (buttonRef.current) {
+        buttonRef.current.removeEventListener("keydown", handleButtonClick);
+      }
+    };
+  }, [isDropdownOpen]);
+
   useEffect(() => {
     setMultiSelectValueCB(selectedOptions);
   }, [selectedOptions, setMultiSelectValueCB]);
@@ -40,31 +67,13 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
     setDropdownOpen(!isDropdownOpen);
   };
 
-  const handleOptionKeyPress = (
-    event: React.KeyboardEvent<HTMLInputElement>,
-    option: string
-  ) => {
-    if (event.key === "Enter" || event.key === " ") {
-      toggleOption(option);
-    }
+  const handleOptionBlur = () => {
+    setOptionsFocused(false);
   };
 
-  useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (
-        multiselectInputRef.current &&
-        !multiselectInputRef.current.contains(event.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleOutsideClick);
-
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, []);
+  const handleOptionsFocus = () => {
+    setOptionsFocused(true);
+  };
 
   return (
     <div className="max-w-md mx-auto mt-2 mb-20 bg-white rounded-md shadow-md">
@@ -74,26 +83,20 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
       >
         {props.label}
       </label>
-      <div className="relative" ref={multiselectInputRef}>
+      <div
+        onFocus={handleOptionsFocus}
+        className="relative"
+        ref={multiselectInputRef}
+      >
         <div className="w-full p-2 border border-gray-300 rounded-md">
-          <div className="flex flex-wrap gap-2">
-            {selectedOptions.map((name) => (
-              <span key={name} className="bg-blue-500 text-white px-2 rounded">
-                {name}
-              </span>
-            ))}
-          </div>
-
-          <input
-            type="text"
+          <button
             id="multiselect"
             className="w-full focus:shadow-outline-blue focus:border-blue-500"
             placeholder="Select options"
-            autoComplete="off"
             onClick={toggleDropdown}
-            onKeyDown={() => {}}
-            tabIndex={0}
-          />
+          >
+            Open DropDown
+          </button>
         </div>
 
         <div
@@ -101,8 +104,12 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
             isDropdownOpen ? "" : "hidden"
           }`}
         >
-          {props.options.map((name) => (
-            <div key={name.id} className="p-2">
+          {props.options.map((name, index) => (
+            <div
+              key={name.id}
+              className={`p-2 ${isOptionsFocused ? "focus:outline-none" : ""}`}
+              onBlur={handleOptionBlur}
+            >
               <label
                 tabIndex={0}
                 role="checkbox"
@@ -110,12 +117,18 @@ export default function MultiSelectPreview(props: MultiSelectPreviewProps) {
               >
                 <input
                   type="checkbox"
+                  id={index === 0 ? "nextElementId" : index.toString()}
+                  className="mr-2 focus:shadow-outline-blue focus:border-blue-500"
                   value={name.option}
-                  className="mr-2"
                   checked={selectedOptions.includes(name.option)}
-                  onChange={() => { }}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      toggleOption(name.option);
+                    }
+                  }}
                   onClick={() => toggleOption(name.option)}
-                  onKeyDown={(e) => handleOptionKeyPress(e, name.option)}
+                  autoFocus={index === 0 && isDropdownFirstOpen}
                 />
                 {name.option}
               </label>
